@@ -22,11 +22,11 @@ class Venta(models.Model):
     descuento_campagna = models.CharField(verbose_name="Dcto Camp", choices=SI_NO_CHOICES, max_length=2, default=no)
     uf_descuento_campagna = models.FloatField(verbose_name="Dcts Cam", help_text="Campaña dscto",
                                               validators=[validar_positivo])
-    bono_pie = models.FloatField(verbose_name='Bon Pie', blank=True, null=True, validators=[validar_positivo])
+    bono_pie = models.FloatField(verbose_name='Bon Pie', default=0, validators=[validar_positivo])
     aplicacion_bono = models.CharField(verbose_name="Aplicación Bono", choices=APLICACION_DSCTO_CHOICES, max_length=10,
                                        default='No Aplica')
     precio_venta = models.FloatField(verbose_name="P.Venta", help_text="Precio venta", default=0)
-    credito_hipotecario = models.FloatField(verbose_name="Credito Hipotecario", validators=[validar_positivo], null=True, blank=True)
+    credito_hipotecario = models.FloatField(verbose_name="Credito Hipotecario", validators=[validar_positivo], default=0)
     saldo_contado = models.FloatField(verbose_name="Saldo Contado", validators=[validar_positivo], null=True, blank=True)
     recursos_propio = models.FloatField(verbose_name="Recursos Propios", validators=[validar_positivo], null=True, blank=True)
     subsidio = models.FloatField(verbose_name="Subsidio", validators=[validar_positivo], null=True, blank=True)

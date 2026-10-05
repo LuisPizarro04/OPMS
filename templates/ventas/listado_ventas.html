@@ -1,120 +1,486 @@
-{% extends "admin/base_site.html" %}
+{% extends "unfold/layouts/base.html" %}
+
 {% load static %}
+{% load i18n unfold %}
+
+
+{% block title %}
+Hitos | SARAMS
+{% endblock %}
+
 
 {% block extrahead %}
-    {{ block.super }}
-    <!-- CSS DataTables -->
-    <link rel="stylesheet" href="{% static 'vendor/datatables/datatables.css' %}">
-    <!--<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>-->
+{{ block.super }}
 
-    <style>
-        #tabla-ventas_wrapper {
-            width: 100%;
-        }
+<!-- DataTables -->
+<link
+        rel="stylesheet"
+        href="{% static 'vendor/datatables/datatables.css' %}"
+>
 
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
-            padding: 0 1rem;
-        }
+<style>
 
-        table.dataTable {
-            width: 100% !important;
-        }
-    </style>
+    /* ==================================================
+       DATATABLE
+       ================================================== */
+
+    #tabla-ventas_wrapper {
+        width: 100%;
+    }
+
+    #tabla-ventas {
+        width: 100% !important;
+        border-collapse: collapse;
+    }
+
+    #tabla-ventas thead th {
+        white-space: nowrap;
+    }
+
+    #tabla-ventas tbody td {
+        vertical-align: middle;
+    }
+
+
+    /* ==================================================
+       DATATABLE CONTROLS
+       ================================================== */
+
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 1rem;
+    }
+
+
+    /* ==================================================
+       DROPDOWN ACCIONES
+       ================================================== */
+
+    .sarams-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .sarams-dropdown summary {
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .sarams-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .sarams-dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 6px);
+
+        min-width: 210px;
+
+        background: #ffffff;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+
+        padding: 6px;
+
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+        z-index: 1000;
+    }
+
+    .sarams-dropdown-menu a {
+        display: block;
+
+        padding: 8px 10px;
+
+        border-radius: 6px;
+
+        text-decoration: none;
+
+        color: #111827;
+
+        font-size: 13px;
+    }
+
+    .sarams-dropdown-menu a:hover {
+        background: #f3f4f6;
+    }
+
+
+    /* DARK MODE */
+
+    .dark .sarams-dropdown-menu {
+        background: #111827;
+        border-color: #374151;
+    }
+
+    .dark .sarams-dropdown-menu a {
+        color: #f9fafb;
+    }
+
+    .dark .sarams-dropdown-menu a:hover {
+        background: #1f2937;
+    }
+
+</style>
 
 {% endblock %}
 
+
 {% block content %}
-    <h1 class="mb-4">Listado de Ventas</h1>
 
-    <table id="tabla-ventas" class="display table table-hover" style="width:100%">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Propiedad</th>
-            <th>Cliente</th>
-            <th>Estado</th>
-            <th>Tipo</th>
-            <th>F.Venta</th>
-            <th>F.Promesa</th>
-            <th>P.Venta</th>
-            <th>Ejecutivo</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for venta in ventas %}
-            <tr>
-                <td>{{ venta.id_venta }}</td>
-                <td>{{ venta.id_propiedad }}</td>
-                <td>{{ venta.id_cliente.nombres_1 }} {{ venta.id_cliente.apellidos_1 }}</td>
-                <td>{{ venta.estado_venta }}</td>
-                <td>{{ venta.tipo_venta }}</td>
-                <td>{{ venta.fecha_venta }}</td>
-                <td>{{ venta.fecha_promesa }}</td>
-                <td>{{ venta.precio_venta }} UF</td>
-                <td>{{ venta.ejecutivo }}</td>
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Opciones
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="{% url 'editar_etapas' venta.id_venta %}">Editar Etapas</a>
-                            <a class="dropdown-item" href="{% url 'informe_pagos' venta.id_venta %}">Informe Pagos</a>
-                            <a class="dropdown-item" href="{% url 'ccn' venta.id_venta %}">Carta CN</a>
-                            <a class="dropdown-item" href="{% url 'cartaoferta' venta.id_venta %}">Carta Oferta</a>
-                            <a class="dropdown-item" href="{% url 'fpm_venta' venta.id_venta %}">Carta FPM</a>
-                            <a class="dropdown-item" href="{% url 'entrega_docven' venta.id_venta %}">Memo Doc</a>
-                            <a class="dropdown-item" href="{% url 'memoggoo' venta.id_venta %}">Memo GGOO</a>
-                        </div>
-                    </div>
-                </td>
+<div class="p-6">
+
+    <!-- ==================================================
+         ENCABEZADO
+         ================================================== -->
+
+    <div class="mb-6">
+
+        <h1 class="
+            text-2xl
+            font-semibold
+            text-font-important-light
+            dark:text-font-important-dark
+        ">
+            Hitos
+        </h1>
+
+        <p class="
+            mt-2
+            text-sm
+            text-font-subtle-light
+            dark:text-font-subtle-dark
+        ">
+            Seguimiento y gestión de ventas.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         TABLA
+         ================================================== -->
+
+    <div class="
+        border
+        border-base-200
+        rounded-default
+        dark:border-base-800
+        overflow-visible
+    ">
+
+        <table id="tabla-ventas">
+
+            <thead>
+
+            <tr class="
+                    bg-base-50
+                    dark:bg-base-900
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    ID
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Propiedad
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Cliente
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Estado
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Tipo
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    F. Venta
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    F. Promesa
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    P. Venta
+                </th>
+
+                <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Ejecutivo
+                </th>
+
+                <th class="px-4 py-3 text-right text-sm font-semibold">
+                    Acciones
+                </th>
+
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
-    <script>
-        window.addEventListener('load', function () {
-            // Esperar que el admin cargue jQuery, luego cargar DataTables manualmente
-            var script = document.createElement('script');
-            script.src = "{% static 'vendor/datatables/datatables.min.js' %}";
-            script.onload = function () {
-                console.log("DataTable cargado:", typeof $.fn.DataTable !== 'undefined');
-                $('#tabla-ventas').DataTable({
-                    pageLength: 10,
-                    order: [[0, 'desc']],
+            </thead>
+
+
+            <tbody>
+
+            {% for venta in ventas %}
+
+            <tr class="
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                    hover:bg-base-50
+                    dark:hover:bg-base-900
+                ">
+
+                <!-- ID -->
+                <td class="px-4 py-3 text-sm">
+                    {{ venta.id_venta }}
+                </td>
+
+
+                <!-- PROPIEDAD -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+                    {{ venta.id_propiedad }}
+                </td>
+
+
+                <!-- CLIENTE -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                    {{ venta.id_cliente.nombres_1 }}
+                    {{ venta.id_cliente.apellidos_1 }}
+
+                </td>
+
+
+                <!-- ESTADO -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                        <span class="
+                            inline-flex
+                            items-center
+                            rounded-full
+                            px-2.5
+                            py-1
+                            text-xs
+                            font-medium
+                            bg-primary-50
+                            text-primary-700
+                            dark:bg-primary-500/10
+                            dark:text-primary-400
+                        ">
+
+                            {{ venta.estado_venta }}
+
+                        </span>
+
+                </td>
+
+
+                <!-- TIPO -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                    {{ venta.tipo_venta }}
+
+                </td>
+
+
+                <!-- FECHA VENTA -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                    {{ venta.fecha_venta|date:"d/m/Y" }}
+
+                </td>
+
+
+                <!-- FECHA PROMESA -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                    {% if venta.fecha_promesa %}
+                    {{ venta.fecha_promesa|date:"d/m/Y" }}
+                    {% else %}
+                    —
+                    {% endif %}
+
+                </td>
+
+
+                <!-- PRECIO -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap font-medium">
+
+                    {{ venta.precio_venta }} UF
+
+                </td>
+
+
+                <!-- EJECUTIVO -->
+                <td class="px-4 py-3 text-sm whitespace-nowrap">
+
+                    {{ venta.ejecutivo }}
+
+                </td>
+
+
+                <!-- ACCIONES -->
+                <td class="px-4 py-3 text-right">
+
+                    <details class="sarams-dropdown">
+
+                        <summary class="
+                                inline-flex
+                                items-center
+                                gap-1
+                                px-3
+                                py-2
+                                rounded-default
+                                border
+                                border-base-200
+                                dark:border-base-700
+                                hover:bg-base-50
+                                dark:hover:bg-base-800
+                                text-sm
+                                font-medium
+                            ">
+
+                            Opciones
+
+                            <span class="material-symbols-outlined text-base">
+                                    expand_more
+                                </span>
+
+                        </summary>
+
+
+                        <div class="sarams-dropdown-menu">
+
+                            <a href="{% url 'editar_etapas' venta.id_venta %}">
+                                Editar etapas
+                            </a>
+
+                            <a href="{% url 'informe_pagos' venta.id_venta %}">
+                                Informe de pagos
+                            </a>
+
+                            <a href="{% url 'ccn' venta.id_venta %}">
+                                Carta CN
+                            </a>
+
+                            <a href="{% url 'cartaoferta' venta.id_venta %}">
+                                Carta oferta
+                            </a>
+
+                            <a href="{% url 'fpm_venta' venta.id_venta %}">
+                                Carta FPM
+                            </a>
+
+                            <a href="{% url 'entrega_docven' venta.id_venta %}">
+                                Memo Doc
+                            </a>
+
+                            <a href="{% url 'memoggoo' venta.id_venta %}">
+                                Memo GGOO
+                            </a>
+
+                        </div>
+
+                    </details>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td
+                        colspan="10"
+                        class="
+                            px-4
+                            py-10
+                            text-center
+                            text-font-subtle-light
+                            dark:text-font-subtle-dark
+                        "
+                >
+                    No existen ventas registradas.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     DATATABLE
+     ====================================================== -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropdowns = document.querySelectorAll(".sarams-dropdown");
+
+        // Solo un dropdown abierto a la vez
+        dropdowns.forEach(function (dropdown) {
+
+            dropdown.addEventListener("toggle", function () {
+
+                if (!dropdown.open) {
+                    return;
+                }
+
+                dropdowns.forEach(function (otherDropdown) {
+
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.removeAttribute("open");
+                    }
 
                 });
-            };
-            document.body.appendChild(script);
+
+            });
+
         });
-    </script>
-    <!-- Popper.js para Bootstrap 4 -->
-    <!-- Solución funcional SIN integrity -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
 
-    <!-- Bootstrap JS (si no estás usando bundle) -->
-    <script src="{% static 'vendor/bootstrap-4.6.2-dist/js/bootstrap.min.js' %}"></script>
-    <!-- ✅ Esperar a que toda la página del admin esté lista -->
-    <script>
-        window.addEventListener('load', function () {
-            // Cargar Popper dinámicamente
-            const popper = document.createElement('script');
-            popper.src = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js";
-            document.body.appendChild(popper);
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener("click", function (event) {
 
-            // Cuando Popper esté cargado, cargar Bootstrap JS
-            popper.onload = function () {
-                const bootstrap = document.createElement('script');
-                bootstrap.src = "{% static 'vendor/bootstrap-4.6.2-dist/js/bootstrap.min.js' %}";
-                document.body.appendChild(bootstrap);
-            };
+            dropdowns.forEach(function (dropdown) {
+
+                if (
+                    dropdown.open &&
+                    !dropdown.contains(event.target)
+                ) {
+                    dropdown.removeAttribute("open");
+                }
+
+            });
+
         });
-    </script>
+
+    });
+</script>
+
 {% endblock %}

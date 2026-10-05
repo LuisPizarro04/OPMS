@@ -1,11 +1,54 @@
-# Ignorar todos el contenido de las carpetas migrations
-**/migrations/*
-
-# Exceptuar el archivo __init__.py
-!**/migrations/__init__.py
-
-# Ignorar el archivo de base de datos SQLite
-# db.sqlite3
+# ==============================
+# DJANGO / PYTHON
+# ==============================
 
 __pycache__/
-.venv
+*.py[cod]
+*.pyo
+
+# Entorno virtual
+.venv/
+venv/
+
+
+# ==============================
+# MIGRACIONES
+# ==============================
+
+**/migrations/*
+
+# Mantener __init__.py
+!**/migrations/__init__.py
+
+
+# ==============================
+# VARIABLES DE ENTORNO
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+
+# ==============================
+# PYCHARM
+# ==============================
+
+.idea/
+*.iml
+
+
+# ==============================
+# ARCHIVOS GENERADOS POR IA
+# ==============================
+
+ai_agent/persistence/memoria_chat-db
+app/vectorstore/
+
+
+# ==============================
+# SISTEMA OPERATIVO
+# ==============================
+
+.DS_Store
+Thumbs.db

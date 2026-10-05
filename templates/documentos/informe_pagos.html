@@ -1,205 +1,971 @@
-{% extends "admin/base_site.html" %}
+{% extends "unfold/layouts/base.html" %}
+
 {% load format_utils %}
 {% load dict_filters %}
 {% load static %}
+{% load i18n unfold %}
+
+
+{% block title %}
+    Informe de Pagos | SARAMS
+{% endblock %}
+
 
 {% block extrahead %}
     {{ block.super }}
+
     <style>
-        .table-sm th, .table-sm td {
-            padding: 0.35rem;
-            font-size: 0.85rem;
+        /* ==================================================
+           TABLAS
+           ================================================== */
+
+        .sarams-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .table-summary td, .table-summary th {
-            font-size: 0.85rem;
-            padding: 0.3rem 0.6rem;
-        }
-
-        .table-summary th {
+        .sarams-table th {
+            padding: 12px 16px;
             text-align: left;
+            font-size: 12px;
             font-weight: 600;
             white-space: nowrap;
         }
 
-        .logo-mini {
-            max-height: 60px;
+        .sarams-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        .sarams-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+
+        /* ==================================================
+           BADGES
+           ================================================== */
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-contabilizado {
+            background: rgb(220 252 231);
+            color: rgb(21 128 61);
+        }
+
+        .dark .status-contabilizado {
+            background: rgb(34 197 94 / 0.12);
+            color: rgb(74 222 128);
+        }
+
+        .status-default {
+            background: rgb(243 244 246);
+            color: rgb(75 85 99);
+        }
+
+        .dark .status-default {
+            background: rgb(255 255 255 / 0.08);
+            color: rgb(209 213 219);
         }
     </style>
 {% endblock %}
 
+
 {% block content %}
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-xl-10">
-                <div class="card shadow-sm border rounded">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div>
-                                <img src="{% static 'assets/img/illustrations/logo-horizontal.gif' %}" class="logo-mini"
-                                     alt="logo">
 
-                            </div>
-                            <div><h5 class="mt-2 mb-0">Inmobiliaria Costanera Pacífico</h5>
-                                <p style="text-align: center"><strong style="font-size: x-large">Informe de
-                                    Pagos</strong> <br>La
-                                    Serena, {{ fecha_hoy|date:"d-M-Y" }}</p>
-                                <p style="text-align: center"><strong style="font-size: x-large">Arqueo
-                                    Contable</strong></p>
-                            </div>
-                            <div>
-                                <p class="mb-1">
-                                    <strong>Cliente:</strong> {{ datos_venta.0.id_cliente.nombres_1 }} {{ datos_venta.0.id_cliente.apellidos_1 }}
-                                </p>
-                                <p class="mb-1">
-                                    <strong>Dpto.:</strong> {{ datos_venta.0.id_propiedad.numero_propiedad }}</p>
-                                <p class="mb-1"><strong>Fecha
-                                    Venta:</strong> {{ datos_venta.0.fecha_venta|date:"d-m-Y" }}</p>
-                            </div>
-                        </div>
+<div class="p-6">
 
-                        <div class="table-responsive mb-4">
-                            <table class="table table-sm table-bordered text-center align-middle">
-                                <thead class="table-light">
-                                <tr>
-                                    <th>Abono $</th>
-                                    <th>Abono UF</th>
-                                    <th>Fecha Cobro</th>
-                                    <th>Estado Cobro</th>
-                                    <th>Valor UF pago efectivo</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for pago in datos %}
-                                    <tr>
-                                        <td>{{ pago.monto_pago|clp_format }}</td>
-                                        <td>{{ pago.uf_pago |uf_format }}</td>
-                                        <td>{{ pago.fecha_real_pago|date:"d-m-Y" }}</td>
-                                        <td>{{ pago.estado_pago }}</td>
-                                        {% if dato.estado_pago == "Contabilizado" %}
-                                            <td style="text-align: center;">
-                                                {{ valores_uf_por_pago|dict_get:pago.id_pago|floatformat:2 }}
-                                            </td>
-                                        {% else %}
-                                            <td style="text-align: center;">—</td>
-                                        {% endif %}
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="5" class="text-center">No hay pagos registrados</td>
-                                    </tr>
-                                {% endfor %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ total_pagado|clp_format }}</strong></td>
-                                    <td>
-                                        <strong>{{ total_pagado_uf|uf_format }}</strong></td>
-                                    <td><strong>Total</strong></td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </tr>
+    <!-- ==================================================
+         CABECERA
+         ================================================== -->
 
-                                </tbody>
-                            </table>
-                        </div>
+    <div class="flex flex-col gap-4 mb-8 lg:flex-row lg:items-center lg:justify-between">
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Fondo Puesta en Marcha</h6>
-                                {% if datos_venta %}
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="table-light">
-                                        <tr>
-                                            <th>Monto</th>
-                                            <th>Fecha Pago</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for venta in datos_venta %}
-                                            <tr>
-                                                <td>{{ venta.id_propiedad.fpm|clp_format }}</td>
-                                                <td>{{ venta.id_propiedad.fpm|clp_format }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                {% else %}
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Fondo Gastos OOPP Contado</h6>
-                                {% if datos_venta %}
-                                    <table class="table table-sm table-bordered">
-                                        <thead class="table-light">
-                                        <tr>
-                                            <th>Monto</th>
-                                            <th>Fecha Pago</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for venta in datos_venta %}
-                                            <tr>
-                                                <td>{{ venta.ggoo|clp_format }}</td>
-                                                <td>{{ venta.ggoo|clp_format }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                {% else %}
-                                {% endif %}
-                            </div>
-                        </div>
+        <div>
 
-                        <div class="mt-4">
-                            <h6>Resumen Arqueo</h6>
-                            <table class="table table-sm table-bordered table-summary w-50">
-                                <tr>
-                                    <th>Valor Depto.</th>
-                                    <td>{{ valor_inicial_propiedad|uf_format }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Abono Inmobiliaria</th>
-                                    <td>{{ bono_pie|uf_format }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Pie Cancelado</th>
-                                    <td>{{ pie_cancelado|uf_format }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Saldo Pie</th>
-                                    <td>{{ saldo_pie|uf_format }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Crédito Hipotecario</th>
-                                    <td>{{ credito_hipotecario|uf_format }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Total</th>
-                                    <td><strong>{{ total|uf_format }}</strong></td>
-                                </tr>
-                                <tr>
-                                    <th>Valor Final Inmobiliaria</th>
-                                    <td><strong>{{ precio_final|uf_format }}</strong></td>
-                                </tr>
-                            </table>
-                        </div>
-                        <hr class="my-0">
-                        <div style="margin-top: 20px; text-align: center;">
-                            <p style="font-style: italic; font-size: 14px;">
-                                Gracias por su preferencia. Para consultas, contáctenos a <a
-                                    href="mailto:amoya@icpacifico.cl">amoya@icpacifico.cl</a>
-                            </p>
-                            <div class="mt-4">
-                                <a class="btn btn-outline-primary"
-                                   href="{% url 'pagos_invoice_pdf' id_venta=id_venta %}"
-                                   target="_blank">
-                                    Descargar PDF
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <a
+                href="{% url 'lista_ventas' %}"
+                class="
+                    inline-flex
+                    items-center
+                    gap-1
+                    mb-3
+                    text-sm
+                    text-font-subtle-light
+                    dark:text-font-subtle-dark
+                    hover:text-primary-600
+                    dark:hover:text-primary-400
+                "
+            >
+                <span class="material-symbols-outlined text-lg">
+                    arrow_back
+                </span>
+
+                Volver a Hitos
+            </a>
+
+
+            <h1 class="
+                text-2xl
+                font-semibold
+                text-font-important-light
+                dark:text-font-important-dark
+            ">
+                Informe de Pagos
+            </h1>
+
+
+            <p class="
+                mt-2
+                text-sm
+                text-font-subtle-light
+                dark:text-font-subtle-dark
+            ">
+                Arqueo contable de la venta
+            </p>
+
         </div>
+
+
+        <!-- DESCARGAR PDF -->
+
+        <div>
+
+            <a
+                href="{% url 'pagos_invoice_pdf' id_venta=id_venta %}"
+                target="_blank"
+                class="
+                    inline-flex
+                    items-center
+                    gap-2
+                    px-4
+                    py-2.5
+                    rounded-default
+                    bg-primary-600
+                    hover:bg-primary-700
+                    text-white
+                    text-sm
+                    font-medium
+                    transition
+                "
+            >
+
+                <span class="material-symbols-outlined text-lg">
+                    download
+                </span>
+
+                Descargar PDF
+
+            </a>
+
+        </div>
+
     </div>
+
+
+
+    <!-- ==================================================
+         INFORMACIÓN GENERAL
+         ================================================== -->
+
+    {% if datos_venta %}
+
+        {% with venta=datos_venta.0 %}
+
+        <div class="
+            border
+            border-base-200
+            dark:border-base-800
+            rounded-default
+            mb-8
+        ">
+
+            <div class="
+                grid
+                grid-cols-1
+                md:grid-cols-3
+                divide-y
+                md:divide-y-0
+                md:divide-x
+                divide-base-200
+                dark:divide-base-800
+            ">
+
+                <!-- CLIENTE -->
+
+                <div class="p-5">
+
+                    <div class="
+                        text-xs
+                        uppercase
+                        tracking-wide
+                        font-medium
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                        mb-2
+                    ">
+                        Cliente
+                    </div>
+
+                    <div class="
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        {{ venta.id_cliente.nombres_1 }}
+                        {{ venta.id_cliente.apellidos_1 }}
+                    </div>
+
+                </div>
+
+
+                <!-- DEPARTAMENTO -->
+
+                <div class="p-5">
+
+                    <div class="
+                        text-xs
+                        uppercase
+                        tracking-wide
+                        font-medium
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                        mb-2
+                    ">
+                        Departamento
+                    </div>
+
+                    <div class="
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        {{ venta.id_propiedad.numero_propiedad }}
+                    </div>
+
+                </div>
+
+
+                <!-- FECHA VENTA -->
+
+                <div class="p-5">
+
+                    <div class="
+                        text-xs
+                        uppercase
+                        tracking-wide
+                        font-medium
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                        mb-2
+                    ">
+                        Fecha de venta
+                    </div>
+
+                    <div class="
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        {{ venta.fecha_venta|date:"d/m/Y" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endwith %}
+
+    {% endif %}
+
+
+
+    <!-- ==================================================
+         PAGOS
+         ================================================== -->
+
+    <div class="mb-8">
+
+        <div class="mb-4">
+
+            <h2 class="
+                text-lg
+                font-semibold
+                text-font-important-light
+                dark:text-font-important-dark
+            ">
+                Pagos
+            </h2>
+
+            <p class="
+                mt-1
+                text-sm
+                text-font-subtle-light
+                dark:text-font-subtle-dark
+            ">
+                Detalle de pagos registrados para la venta.
+            </p>
+
+        </div>
+
+
+        <div class="
+            border
+            border-base-200
+            dark:border-base-800
+            rounded-default
+            overflow-x-auto
+        ">
+
+            <table class="sarams-table">
+
+                <thead class="
+                    bg-base-50
+                    dark:bg-base-900
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <tr>
+                        <th>Abono CLP</th>
+                        <th>Abono UF</th>
+                        <th>Fecha cobro</th>
+                        <th>Estado cobro</th>
+                        <th>Valor UF pago efectivo</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for pago in datos %}
+
+                    <tr class="
+                        border-b
+                        border-base-200
+                        dark:border-base-800
+                        hover:bg-base-50
+                        dark:hover:bg-base-900
+                    ">
+
+                        <td>
+                            {{ pago.monto_pago|clp_format }}
+                        </td>
+
+                        <td>
+                            {{ pago.uf_pago|uf_format }}
+                        </td>
+
+                        <td class="whitespace-nowrap">
+                            {{ pago.fecha_real_pago|date:"d/m/Y" }}
+                        </td>
+
+                        <td>
+
+                            {% if pago.estado_pago == "Contabilizado" %}
+
+                                <span class="
+                                    status-badge
+                                    status-contabilizado
+                                ">
+                                    {{ pago.estado_pago }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="
+                                    status-badge
+                                    status-default
+                                ">
+                                    {{ pago.estado_pago }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if pago.estado_pago == "Contabilizado" %}
+
+                                {{ valores_uf_por_pago|dict_get:pago.id_pago|floatformat:2 }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="
+                                text-center
+                                py-10
+                                text-font-subtle-light
+                                dark:text-font-subtle-dark
+                            "
+                        >
+                            No hay pagos registrados.
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    <!-- TOTAL -->
+
+                    <tr class="
+                        bg-base-50
+                        dark:bg-base-900
+                        font-semibold
+                    ">
+
+                        <td>
+                            {{ total_pagado|clp_format }}
+                        </td>
+
+                        <td>
+                            {{ total_pagado_uf|uf_format }}
+                        </td>
+
+                        <td>
+                            Total
+                        </td>
+
+                        <td>—</td>
+
+                        <td>—</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         FONDOS
+         ================================================== -->
+
+    <div class="
+        grid
+        grid-cols-1
+        lg:grid-cols-2
+        gap-6
+        mb-8
+    ">
+
+
+        <!-- ==================================================
+             FONDO PUESTA EN MARCHA
+             ================================================== -->
+
+        <div class="
+            border
+            border-base-200
+            dark:border-base-800
+            rounded-default
+        ">
+
+            <div class="p-5">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="
+                        material-symbols-outlined
+                        text-primary-600
+                    ">
+                        account_balance_wallet
+                    </span>
+
+                    <h2 class="
+                        text-base
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        Fondo Puesta en Marcha
+                    </h2>
+
+                </div>
+
+
+                <p class="
+                    text-sm
+                    text-font-subtle-light
+                    dark:text-font-subtle-dark
+                    mb-5
+                ">
+                    Información asociada al FPM de la propiedad.
+                </p>
+
+
+                <div class="
+                    border
+                    border-base-200
+                    dark:border-base-800
+                    rounded-default
+                    overflow-hidden
+                ">
+
+                    <table class="sarams-table">
+
+                        <thead class="
+                            bg-base-50
+                            dark:bg-base-900
+                        ">
+
+                            <tr>
+                                <th>Monto</th>
+                                <th>Fecha pago</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for venta in datos_venta %}
+
+                            <tr>
+
+                                <td>
+                                    {{ venta.id_propiedad.fpm|clp_format }}
+                                </td>
+
+                                <!--
+                                    Pendiente:
+                                    actualmente no existe lógica definitiva
+                                    para la fecha de pago del FPM.
+                                -->
+
+                                <td>
+                                    {{ venta.id_propiedad.fpm|clp_format }}
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="2" class="text-center py-6">
+                                    Sin información registrada.
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             GASTOS OOPP
+             ================================================== -->
+
+        <div class="
+            border
+            border-base-200
+            dark:border-base-800
+            rounded-default
+        ">
+
+            <div class="p-5">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="
+                        material-symbols-outlined
+                        text-primary-600
+                    ">
+                        receipt_long
+                    </span>
+
+                    <h2 class="
+                        text-base
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        Fondo Gastos OOPP Contado
+                    </h2>
+
+                </div>
+
+
+                <p class="
+                    text-sm
+                    text-font-subtle-light
+                    dark:text-font-subtle-dark
+                    mb-5
+                ">
+                    Información asociada a gastos OOPP de la venta.
+                </p>
+
+
+                <div class="
+                    border
+                    border-base-200
+                    dark:border-base-800
+                    rounded-default
+                    overflow-hidden
+                ">
+
+                    <table class="sarams-table">
+
+                        <thead class="
+                            bg-base-50
+                            dark:bg-base-900
+                        ">
+
+                            <tr>
+                                <th>Monto</th>
+                                <th>Fecha pago</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for venta in datos_venta %}
+
+                            <tr>
+
+                                <td>
+                                    {{ venta.ggoo|clp_format }}
+                                </td>
+
+                                <!--
+                                    Pendiente:
+                                    actualmente no existe lógica definitiva
+                                    para la fecha de pago de GGOO.
+                                -->
+
+                                <td>
+                                    {{ venta.ggoo|clp_format }}
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="2" class="text-center py-6">
+                                    Sin información registrada.
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         RESUMEN ARQUEO
+         ================================================== -->
+
+    <div class="
+        border
+        border-base-200
+        dark:border-base-800
+        rounded-default
+    ">
+
+        <!-- CABECERA -->
+
+        <div class="
+            px-5
+            py-4
+            border-b
+            border-base-200
+            dark:border-base-800
+        ">
+
+            <div class="flex items-center gap-3">
+
+                <span class="
+                    material-symbols-outlined
+                    text-primary-600
+                ">
+                    calculate
+                </span>
+
+                <div>
+
+                    <h2 class="
+                        text-lg
+                        font-semibold
+                        text-font-important-light
+                        dark:text-font-important-dark
+                    ">
+                        Resumen Arqueo
+                    </h2>
+
+                    <p class="
+                        mt-1
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Resumen financiero de la operación.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTENIDO -->
+
+        <div class="p-5">
+
+            <div class="max-w-2xl">
+
+                <!-- VALOR DEPTO -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Valor Depto.
+                    </span>
+
+                    <span class="font-medium">
+                        {{ valor_inicial_propiedad|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- ABONO INMOBILIARIA -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Abono Inmobiliaria
+                    </span>
+
+                    <span class="font-medium">
+                        {{ bono_pie|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- PIE CANCELADO -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Pie Cancelado
+                    </span>
+
+                    <span class="font-medium">
+                        {{ pie_cancelado|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- SALDO PIE -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Saldo Pie
+                    </span>
+
+                    <span class="font-medium">
+                        {{ saldo_pie|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- CREDITO HIPOTECARIO -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="
+                        text-sm
+                        text-font-subtle-light
+                        dark:text-font-subtle-dark
+                    ">
+                        Crédito Hipotecario
+                    </span>
+
+                    <span class="font-medium">
+                        {{ credito_hipotecario|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <div class="
+                    flex
+                    justify-between
+                    gap-6
+                    py-3
+                    border-b
+                    border-base-200
+                    dark:border-base-800
+                ">
+
+                    <span class="font-semibold">
+                        Total
+                    </span>
+
+                    <span class="font-semibold">
+                        {{ total|uf_format }}
+                    </span>
+
+                </div>
+
+
+                <!-- PRECIO FINAL -->
+
+                <div class="
+                    flex
+                    justify-between
+                    items-center
+                    gap-6
+                    mt-3
+                    px-4
+                    py-4
+                    rounded-default
+                    bg-primary-50
+                    dark:bg-primary-500/10
+                ">
+
+                    <span class="
+                        font-semibold
+                        text-primary-700
+                        dark:text-primary-400
+                    ">
+                        Valor Final Inmobiliaria
+                    </span>
+
+                    <span class="
+                        text-lg
+                        font-semibold
+                        text-primary-700
+                        dark:text-primary-400
+                    ">
+                        {{ precio_final|uf_format }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

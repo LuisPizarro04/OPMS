@@ -1,14 +1,27 @@
-{% extends "admin/base_site.html" %}
+{% extends "unfold/layouts/base.html" %}
 {% load format_utils %}
 {% load dict_filters %}
 {% load static %}
+{% load i18n unfold %}
+
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.sarams-document{max-width:1100px;margin:0 auto}.sarams-document p{line-height:1.65}.sarams-table{width:100%;border-collapse:collapse}.sarams-table th,.sarams-table td{padding:12px 14px;border:1px solid rgb(229 231 235);vertical-align:middle}.dark .sarams-table th,.dark .sarams-table td{border-color:rgb(55 65 81)}.sarams-table th{font-size:12px;font-weight:600;background:rgb(249 250 251);text-align:left}.dark .sarams-table th{background:rgb(17 24 39)}
+</style>
+{% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row justify-content-center">
-            <div class="col-xl-10">
-                <div class="card shadow-sm border rounded">
-                    <div class="card-body">
+    <div class="p-6">
+        <div class="sarams-document">
+            <div>
+                <div class="border border-base-200 dark:border-base-800 rounded-default">
+                    <div class="p-6 lg:p-8">
+<div class="flex items-center justify-between gap-4 mb-6">
+<a href="{% url 'lista_ventas' %}" class="inline-flex items-center gap-1 text-sm text-font-subtle-light dark:text-font-subtle-dark hover:text-primary-600"><span class="material-symbols-outlined text-lg">arrow_back</span>Volver a Hitos</a>
+</div>
+
                         <div>
                             <h5 style="text-align: center">{{ datos_venta.0.id_propiedad.condominio.empresa_vende.razon_social }}
                                 <br> {{ datos_venta.0.id_propiedad.condominio.nombre_condominio }} {{ datos_venta.0.id_propiedad.etapa.nombre_etapa }}
@@ -37,8 +50,8 @@
                         </div>
                         <!-- Documentos-->
                         {% if datos %}
-                            <table class="table table-sm table-bordered text-center align-middle">
-                                <thead class="table-light">
+                            <table class="sarams-table">
+                                <thead >
                                 <tr>
                                     <th>Ingreso Fondo a Rendir</th>
                                     <th>Egresos</th>
@@ -75,8 +88,8 @@
                                 </tbody>
                             </table>
                         {% else %}
-                            <table class="table" style="min-height:200px">
-                                <thead class="table-light">
+                            <table class="sarams-table">
+                                <thead >
                                 <tr>
                                     <th>Banco</th>
                                     <th>Forma de pago</th>
@@ -86,7 +99,7 @@
                                     <th>Pie</th>
                                 </tr>
                                 </thead>
-                                <tbody class="table-border-bottom-0">
+                                <tbody >
                                 <tr>
                                     <td colspan='4' align='center'><span
                                             class="border-info me-1"><i
@@ -109,7 +122,7 @@
                                     href="mailto:amoya@icpacifico.cl">amoya@icpacifico.cl</a>
                             </p>
                             <div class="mt-4">
-                                <a class="btn btn-outline-primary" href="{% url 'memoggoo_print' id_venta=id_venta %}"
+                                <a class="inline-flex items-center gap-2 px-4 py-2.5 rounded-default bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition" href="{% url 'memoggoo_print' id_venta=id_venta %}"
                                    target="_blank">
                                     Descargar PDF
                                 </a>

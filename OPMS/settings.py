@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
-from OPMS.jazzmin_settings import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
+# from OPMS.jazzmin_settings import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
 from OPMS.database import *
+from OPMS.unfold_settings import UNFOLD
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +32,9 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
+    # 'jazzmin',
+    'unfold',
+    'unfold.contrib.import_export',
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,6 +57,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Internacionalización / idioma
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -122,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # USE_I18N = True
 # USE_TZ = True
 
-LANGUAGE_CODE = 'es-cl'
+LANGUAGE_CODE = "es-cl"
 TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
@@ -145,8 +151,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Variables de JAZZMIN desde jazzmin_settings.py
-JAZZMIN_SETTINGS = JAZZMIN_SETTINGS
-JAZZMIN_UI_TWEAKS = JAZZMIN_UI_TWEAKS
+# JAZZMIN_SETTINGS = JAZZMIN_SETTINGS
+# JAZZMIN_UI_TWEAKS = JAZZMIN_UI_TWEAKS
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

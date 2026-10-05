@@ -20,9 +20,10 @@ from gestion_escrituracion import views
 from django.views.generic.base import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.permissions import IsAuthenticated
-
+from OPMS.admin_views import configuracion
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=True)),  # Redirige la raíz al admin
+    path("admin/configuracion/",configuracion,name="admin_configuracion",),
     path('admin/', admin.site.urls),
     path('ventas/', include('gestion_escrituracion.urls')),
     # path('test_datatables/', views.test_datatables, name='test_datatables'),

@@ -35,7 +35,7 @@ class ListaVentasView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(site.each_context(self.request))
-        context['ventas'] = Venta.objects.select_related('id_cliente', 'id_propiedad').filter(estado_venta="Otro_1")
+        context['ventas'] = Venta.objects.select_related('id_cliente', 'id_propiedad').filter(estado_venta="Promesa")
         return context
 
 
@@ -127,11 +127,17 @@ def informe_pagos_venta(request, id_venta):
     valor_inicial_propiedad = None
     if datos_venta.exists():
         valor_inicial_propiedad = datos_venta[0].id_propiedad.valor_inicial_propiedad
-        bono_pie = datos_venta[0].bono_pie
+        bono_pie = datos_venta[0].bono_pie or 0
         precio_final = datos_venta[0].precio_venta
-        credito_hipotecario = datos_venta[0].credito_hipotecario
+        credito_hipotecario = datos_venta[0].credito_hipotecario or 0
+
         total = valor_inicial_propiedad - bono_pie
-        saldo_pie = valor_inicial_propiedad - bono_pie - credito_hipotecario - total_detalle_pie
+        saldo_pie = (
+                valor_inicial_propiedad
+                - bono_pie
+                - credito_hipotecario
+                - total_detalle_pie
+        )
 
     context = {
         'datos': datos,

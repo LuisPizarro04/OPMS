@@ -59,6 +59,35 @@ class Cliente(models.Model):
     telefono = models.CharField(verbose_name="Teléfono", max_length=9)
     renta = models.IntegerField(verbose_name="Renta")
     id_profesion = models.ForeignKey(Profesione, verbose_name="Profesión", on_delete=models.CASCADE)  # PENDIENTE
+    estado_civil = models.CharField(
+        verbose_name="Estado civil",
+        max_length=30,
+        choices=ESTADO_CIVIL_CHOICES,
+        blank=True,
+        default=""
+    )
+
+    direccion = models.CharField(
+        verbose_name="Dirección",
+        max_length=255,
+        blank=True,
+        default=""
+    )
+
+    ciudad = models.CharField(
+        verbose_name="Ciudad",
+        max_length=100,
+        blank=True,
+        default=""
+    )
+
+    nivel_educacional = models.CharField(
+        verbose_name="Nivel educacional",
+        max_length=100,
+        choices=ENSENAGSA_CHOICES,
+        blank=True,
+        default=""
+    )
 
 
 

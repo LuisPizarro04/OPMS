@@ -33,8 +33,8 @@ VENTAS_CHOICES = [
     ('Activa', 'Activa'),
     ('Inactiva', 'Inactiva'),
     ('Desistida', 'Desistida'),
-    ('Otro_1', 'Otro_1'),
-    ('Otro_2', 'Otro_2'),
+    ('Promesa', 'Promesa'),
+    ('Reserva', 'Reserva'),
 ]
 PAGOS_CHOICES = [
     ('Pendiente', 'Pendiente'),

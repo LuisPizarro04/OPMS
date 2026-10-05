@@ -2,17 +2,19 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 from gestion_contable.admin import PagosInline  # Si mantienes Pagos relacionados a Venta
 from utils_project.filters import CondominioFilter
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Venta, Etapas, VentaEtapa, CampoEtapa, ValoresEtapa
 
 
-# Inline: ValoresEtapa dentro de VentaEtapa
-class ValoresEtapaInline(admin.TabularInline):
+# Valores de los campos asociados a una VentaEtapa
+class ValoresEtapaInline(TabularInline):
     model = ValoresEtapa
     extra = 1
 
 
 @admin.register(VentaEtapa)
-class VentaEtapaAdmin(admin.ModelAdmin):
+# class VentaEtapaAdmin(admin.ModelAdmin):
+class VentaEtapaAdmin(ModelAdmin):
     list_display = ('id_venta_etapa', 'id_venta', 'id_etapa', 'fecha_inicio', 'fecha_fin')
     list_filter = ('id_etapa',)
     date_hierarchy = 'fecha_inicio'
@@ -20,28 +22,30 @@ class VentaEtapaAdmin(admin.ModelAdmin):
     inlines = [ValoresEtapaInline]
 
 
-# Inline: CampoEtapa dentro de Etapas
-class CampoEtapaInline(admin.TabularInline):
+# Campos que componen una Etapa
+class CampoEtapaInline(TabularInline):
     model = CampoEtapa
     extra = 1
 
 
 @admin.register(Etapas)
-class EtapasAdmin(admin.ModelAdmin):
+# class EtapasAdmin(admin.ModelAdmin):
+class EtapasAdmin(ModelAdmin):
     list_display = ('id_etapa', 'tipo_venta_asociado','alias_etapa', 'nombre_etapa')
     search_fields = ('nombre_etapa', 'alias_etapa')
     ordering = ('id_etapa',)
     inlines = [CampoEtapaInline]
 
 
-# Inline: VentaEtapa y Pagos dentro de Venta
-class VentaEtapaInline(admin.TabularInline):
+# Etapas asociadas a una Venta
+class VentaEtapaInline(TabularInline):
     model = VentaEtapa
     extra = 0
 
 
 @admin.register(Venta)
-class VentaAdmin(admin.ModelAdmin):
+# class VentaAdmin(admin.ModelAdmin):
+class VentaAdmin(ModelAdmin):
     list_display = (
         'id_venta', 'get_condominio', 'get_etapa', 'get_numero_propiedad', 'id_cliente', 'estado_venta', 'tipo_venta',
         'fecha_venta', 'fecha_promesa', 'ejecutivo','get_precio_ini_propiedad', 'format_pventa','descuento_campagna','format_ufdsctocam',

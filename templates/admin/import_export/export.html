@@ -1,0 +1,190 @@
+{% extends "admin/import_export/base.html" %}
+
+{% load admin_urls i18n import_export_tags unfold %}
+
+{% block extrahead %}
+{{ block.super }}
+
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+
+{{ form.media }}
+{% endblock %}
+
+
+{% block content %}
+
+<form action="{{ export_url }}" method="POST">
+    {% csrf_token %}
+
+    {# ====================================================== #}
+    {# MENSAJE DE ELEMENTOS SELECCIONADOS #}
+    {# ====================================================== #}
+
+    {% if form.initial.export_items %}
+    <p class="bg-blue-50 mb-4 text-blue-500 px-3 py-3 rounded-default text-sm
+                      dark:bg-blue-500/20 dark:border-blue-500/10">
+
+        {% blocktranslate count len=form.initial.export_items|length %}
+        Exportar {{ len }} elemento seleccionado.
+        {% plural %}
+        Exportar {{ len }} elementos seleccionados.
+        {% endblocktranslate %}
+
+    </p>
+    {% endif %}
+
+
+    {# ====================================================== #}
+    {# LISTADO INFORMATIVO #}
+    {# ====================================================== #}
+
+    {% if not form.is_selectable_fields_form %}
+    {% include "admin/import_export/resource_fields_list.html" with import_or_export="export" %}
+    {% endif %}
+
+
+    {# ====================================================== #}
+    {# ERRORES #}
+    {# ====================================================== #}
+
+    {% if form.non_field_errors %}
+    {% include "unfold/helpers/messages/error.html" with errors=form.non_field_errors %}
+    {% endif %}
+
+
+    {# ====================================================== #}
+    {# FORMULARIO #}
+    {# ====================================================== #}
+
+    <fieldset class="border border-base-200 mb-8 rounded-default p-6 shadow-xs
+                         dark:border-base-800">
+
+
+        {# ================================================== #}
+        {# CAMPOS A EXPORTAR #}
+        {# ================================================== #}
+
+        <div class="mb-8">
+
+            <div class="mb-5">
+
+                <h2 class="font-semibold text-font-important-light
+                               dark:text-font-important-dark">
+                    Seleccione los campos a exportar
+                </h2>
+
+                <p class="mt-1 text-sm text-font-subtle-light
+                              dark:text-font-subtle-dark">
+                    Puede elegir qué información de {{ opts.verbose_name_plural|lower }} desea incluir en el archivo.
+                </p>
+
+            </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-3">
+
+                {% for field in form.visible_fields %}
+
+                {% if field.field.is_selectable_field %}
+                <div
+                        class="selectable-field-export-row !p-0 *:mb-0"
+                        resource-index="{{ field.field.resource_index }}"
+                >
+
+                    {% if field.field.widget.attrs.readonly %}
+
+                    {% include "unfold/helpers/field_readonly.html" with title=field.label value=field.field.value %}
+
+                    {{ field.as_hidden }}
+
+                    {% else %}
+
+                    {% include "unfold/helpers/field.html" with field=field %}
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        {# ================================================== #}
+        {# CONFIGURACIÓN DE EXPORTACIÓN #}
+        {# ================================================== #}
+
+        <div class="border-t border-base-200 pt-6
+                        dark:border-base-800">
+
+            <h2 class="font-semibold mb-4
+                           text-font-important-light
+                           dark:text-font-important-dark">
+                Formato de exportación
+            </h2>
+
+
+            <div class="flex flex-col gap-3">
+
+                {% for field in form.visible_fields %}
+
+                {% if not field.field.is_selectable_field %}
+
+                <div class="*:mb-0">
+
+                    {% if field.field.widget.attrs.readonly %}
+
+                    {% include "unfold/helpers/field_readonly.html" with title=field.label value=field.field.value
+                    outline=1 %}
+
+                    {{ field.as_hidden }}
+
+                    {% else %}
+
+                    {% include "unfold/helpers/field.html" with field=field %}
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        {# ================================================== #}
+        {# CAMPOS OCULTOS #}
+        {# ================================================== #}
+
+        {% for field in form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+
+
+        {# ================================================== #}
+        {# BOTÓN EXPORTAR #}
+        {# ================================================== #}
+
+        <div class="border-t border-base-200 flex justify-end
+                        -mx-6 mt-6 pt-4 px-6
+                        dark:border-base-800">
+
+            {% component "unfold/components/button.html" with submit=1 %}
+            Exportar {{ opts.verbose_name_plural|lower }}
+            {% endcomponent %}
+
+        </div>
+
+    </fieldset>
+
+</form>
+
+{% endblock %}

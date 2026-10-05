@@ -1,0 +1,456 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load i18n unfold %}
+
+{% block title %}
+Administración | SARAMS
+{% endblock %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <!-- =====================================================
+         ENCABEZADO
+         ===================================================== -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-semibold text-font-important-light dark:text-font-important-dark">
+            Administración
+        </h1>
+
+        <p class="mt-2 text-sm text-font-subtle-light dark:text-font-subtle-dark">
+            Configuración general y tablas maestras de SARAMS.
+        </p>
+    </div>
+
+
+    <!-- =====================================================
+         GRID PRINCIPAL
+         ===================================================== -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+
+        <!-- =================================================
+             EMPRESA
+             ================================================= -->
+        {% if perms.gestion_empresa.view_empresa %}
+        <div class="border border-base-200 rounded-default shadow-xs
+                    dark:border-base-800">
+
+            <div class="p-6">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-primary-600">
+                        business
+                    </span>
+
+                    <h2 class="text-lg font-semibold
+                               text-font-important-light
+                               dark:text-font-important-dark">
+                        Empresa
+                    </h2>
+
+                </div>
+
+                <p class="text-sm mb-5
+                          text-font-subtle-light
+                          dark:text-font-subtle-dark">
+                    Configuración de las empresas registradas en SARAMS.
+                </p>
+
+                <a href="{{ urls.empresas }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Empresas</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+
+        <!-- =================================================
+             CLIENTES
+             ================================================= -->
+        {% if perms.gestion_clientes.view_nacionalidade or perms.gestion_clientes.view_areaprofesion or perms.gestion_clientes.view_profesione %}
+        <div class="border border-base-200 rounded-default shadow-xs
+                    dark:border-base-800">
+
+            <div class="p-6">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-primary-600">
+                        groups
+                    </span>
+
+                    <h2 class="text-lg font-semibold
+                               text-font-important-light
+                               dark:text-font-important-dark">
+                        Clientes
+                    </h2>
+
+                </div>
+
+                <p class="text-sm mb-5
+                          text-font-subtle-light
+                          dark:text-font-subtle-dark">
+                    Tablas maestras utilizadas en la gestión de clientes.
+                </p>
+
+
+                {% if perms.gestion_clientes.view_nacionalidade %}
+                <a href="{{ urls.nacionalidades }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Nacionalidades</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_clientes.view_areaprofesion %}
+                <a href="{{ urls.areas_profesion }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Áreas de profesión</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_clientes.view_profesione %}
+                <a href="{{ urls.profesiones }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Profesiones</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% endif %}
+        <!-- =================================================
+             CONFIGURACIÓN DE VENTAS
+             ================================================= -->
+        {% if perms.gestion_escrituracion.view_etapas %}
+        <div class="border border-base-200 rounded-default shadow-xs
+                    dark:border-base-800">
+
+            <div class="p-6">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-primary-600">
+                        account_tree
+                    </span>
+
+                    <h2 class="text-lg font-semibold
+                               text-font-important-light
+                               dark:text-font-important-dark">
+                        Configuración de ventas
+                    </h2>
+
+                </div>
+
+                <p class="text-sm mb-5
+                          text-font-subtle-light
+                          dark:text-font-subtle-dark">
+                    Configuración del flujo, etapas y campos asociados a una venta.
+                </p>
+
+                <a href="{{ urls.etapas }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <div>
+                        <span>Etapas</span>
+                        <p class="mt-1 text-xs
+                                  text-font-subtle-light
+                                  dark:text-font-subtle-dark">
+                            Define las etapas y los campos asociados a cada una.
+                        </p>
+                    </div>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+
+        <!-- =================================================
+             FINANZAS
+             ================================================= -->
+        {% if perms.gestion_contable.view_categoriapago or perms.gestion_contable.view_formapago %}
+        <div class="border border-base-200 rounded-default shadow-xs
+                    dark:border-base-800">
+
+            <div class="p-6">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-primary-600">
+                        payments
+                    </span>
+
+                    <h2 class="text-lg font-semibold
+                               text-font-important-light
+                               dark:text-font-important-dark">
+                        Finanzas
+                    </h2>
+
+                </div>
+
+                <p class="text-sm mb-5
+                          text-font-subtle-light
+                          dark:text-font-subtle-dark">
+                    Configuración de categorías y formas de pago.
+                </p>
+
+
+                {% if perms.gestion_contable.view_categoriapago %}
+                <a href="{{ urls.categorias_pago }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Categorías de pago</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_contable.view_formapago %}
+                <a href="{{ urls.formas_pago }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Formas de pago</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% endif %}
+
+
+        <!-- =================================================
+             POSTVENTA
+             ================================================= -->
+        {% if perms.gestion_postventa.view_recinto or perms.gestion_postventa.view_lugar or perms.gestion_postventa.view_item or perms.gestion_postventa.view_problema or perms.gestion_postventa.view_especialidad or perms.gestion_postventa.view_causa or perms.gestion_postventa.view_alcanceresponsabilidad %}
+        <div class="border border-base-200 rounded-default shadow-xs
+                    dark:border-base-800">
+
+            <div class="p-6">
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-primary-600">
+                        construction
+                    </span>
+
+                    <h2 class="text-lg font-semibold
+                               text-font-important-light
+                               dark:text-font-important-dark">
+                        Postventa
+                    </h2>
+
+                </div>
+
+                <p class="text-sm mb-5
+                          text-font-subtle-light
+                          dark:text-font-subtle-dark">
+                    Parámetros utilizados para clasificar requerimientos.
+                </p>
+
+
+                {% if perms.gestion_postventa.view_recinto %}
+                <a href="{{ urls.recintos }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Recintos</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_lugar %}
+                <a href="{{ urls.lugares }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Lugares</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_item %}
+                <a href="{{ urls.items }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Ítems</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_problema %}
+                <a href="{{ urls.problemas }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Problemas</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_especialidad %}
+                <a href="{{ urls.especialidades }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Especialidades</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_causa %}
+                <a href="{{ urls.causas }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Causas</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+
+                {% if perms.gestion_postventa.view_alcanceresponsabilidad %}
+                <a href="{{ urls.alcances }}"
+                   class="flex items-center justify-between py-3 border-t border-base-200 dark:border-base-800">
+                    <span>Alcances y responsabilidades</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         USUARIOS Y SEGURIDAD
+         ===================================================== -->
+    {% if perms.auth.view_user or perms.auth.view_group %}
+    <div class="mt-6 border border-base-200 rounded-default shadow-xs
+                dark:border-base-800">
+
+        <div class="p-6">
+
+            <div class="flex items-center gap-3 mb-2">
+
+                <span class="material-symbols-outlined text-primary-600">
+                    admin_panel_settings
+                </span>
+
+                <h2 class="text-lg font-semibold
+                           text-font-important-light
+                           dark:text-font-important-dark">
+                    Usuarios y seguridad
+                </h2>
+
+            </div>
+
+            <p class="text-sm mb-5
+                      text-font-subtle-light
+                      dark:text-font-subtle-dark">
+                Administra usuarios, grupos y permisos de acceso a SARAMS.
+            </p>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+
+                {% if perms.auth.view_user %}
+                <a href="{{ urls.usuarios }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Usuarios</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+
+                {% if perms.auth.view_group %}
+                <a href="{{ urls.grupos }}"
+                   class="flex items-center justify-between py-3
+                          border-t border-base-200
+                          dark:border-base-800">
+
+                    <span>Grupos y permisos</span>
+
+                    <span class="material-symbols-outlined text-sm">
+                        arrow_forward
+                    </span>
+
+                </a>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,129 +1,56 @@
-{% extends "admin/base_site.html" %}
+{% extends "unfold/layouts/base.html" %}
 {% load custom_filters %}
+{% load i18n unfold %}
+
+{% block title %}Etapas de Venta #{{ venta.id_venta }} | SARAMS{% endblock %}
 
 {% block content %}
-    <div class="container-fluid px-4">
-
-        <!-- Información de la venta -->
-        <div class="card mb-4 shadow-sm border-0">
-            <div class="card-body">
-
-                <!-- Título separado arriba -->
-                <div class="mb-4 d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">
-                        Información de la Venta <span class="text-muted">#{{ venta.id_venta }}</span>
-                    </h4>
-
-                    <a href="{% url 'lista_ventas' %}" class="btn btn-sm btn-secondary">
-                        ← Volver
-                    </a>
-                </div>
-
-
-                <!-- Fila 1: Propiedad, Cliente, Contacto -->
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>Propiedad:</strong><br>
-                        {{ venta.id_propiedad.alias_condominio }} - {{ venta.id_propiedad.etapa }} -
-                        N°{{ venta.id_propiedad.numero_propiedad }}<br>
-                        <small class="text-muted">Rol: {{ venta.id_propiedad.rol }}</small>
-                    </div>
-
-                    <div class="col-md-4">
-                        <strong>Cliente:</strong><br>
-                        {{ venta.id_cliente.nombres_cliente }} {{ venta.id_cliente.apellidos_cliente }}<br>
-                        <small class="text-muted">{{ venta.id_cliente.rut_cliente }}</small>
-                    </div>
-
-                    <div class="col-md-4">
-                        <strong>Contacto:</strong><br>
-                        {{ venta.id_cliente.telefono }}<br>
-                        {{ venta.id_cliente.correo }}
-                    </div>
-                </div>
-
-                <hr class="my-3">
-
-                <!-- Fila 2: Estado, Ejecutivo, Fechas -->
-                <div class="row">
-                    <div class="col-md-3">
-                        <strong>Estado de venta:</strong><br>
-                        <span class="badge bg-info text-dark">{{ venta.estado_venta }}</span>
-                    </div>
-                    <div class="col-md-3">
-                        <strong>Ejecutivo:</strong><br>
-                        {{ venta.ejecutivo|default:"—" }}
-                    </div>
-                    <div class="col-md-3">
-                        <strong>Fecha promesa:</strong><br>
-                        {{ venta.fecha_promesa|date:"d/m/Y" }}
-                    </div>
-                    <div class="col-md-3">
-                        <strong>Fecha venta (sistema):</strong><br>
-                        {{ venta.fecha_venta|date:"d/m/Y" }}
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-
-        <!-- Etapas con pestañas -->
-        <div class="card shadow-sm border">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" id="etapasTabs" role="tablist">
-                    {% for etapa in etapas %}
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if forloop.first %}active{% endif %}"
-                                    id="etapa-tab-{{ etapa.id_etapa.id_etapa }}"
-                                    data-coreui-toggle="tab"
-                                    data-coreui-target="#etapa-pane-{{ etapa.id_etapa.id_etapa }}"
-                                    type="button"
-                                    role="tab"
-                                    aria-controls="etapa-pane-{{ etapa.id_etapa.id_etapa }}"
-                                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                                {{ etapa.id_etapa.alias_etapa|default:etapa.id_etapa.nombre_etapa }}
-                            </button>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="card-body">
-                <div class="tab-content mt-3" id="etapasTabContent">
-                    {% for etapa in etapas %}
-                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
-                             id="etapa-pane-{{ etapa.id_etapa.id_etapa }}"
-                             role="tabpanel"
-                             aria-labelledby="etapa-tab-{{ etapa.id_etapa.id_etapa }}"
-                             tabindex="0">
-
-                            <form method="post">
-                                {% csrf_token %}
-                                <h5>{{ etapa.id_etapa.nombre_etapa }}</h5>
-
-                                {% with campos=campos_etapas|dict_get:etapa.id_etapa.id_etapa %}
-                                    {% for campo in campos %}
-                                        <div class="mb-3">
-                                            <label class="form-label">{{ campo.nombre_campo }}</label>
-                                            <input type="text"
-                                                   class="form-control"
-                                                   name="campo_{{ campo.id_campo_etapa }}"
-                                                   value="{{ valores_etapas|dict_get:etapa.id_etapa.id_etapa|get_valor:campo.id_campo_etapa|default:'' }}">
-                                        </div>
-                                    {% endfor %}
-                                {% endwith %}
-
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </form>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
+<div class="p-6">
+  <div class="flex flex-col gap-4 mb-8 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <a href="{% url 'lista_ventas' %}" class="inline-flex items-center gap-1 mb-3 text-sm text-font-subtle-light dark:text-font-subtle-dark hover:text-primary-600"><span class="material-symbols-outlined text-lg">arrow_back</span>Volver a Hitos</a>
+      <h1 class="text-2xl font-semibold text-font-important-light dark:text-font-important-dark">Información de la Venta <span class="text-font-subtle-light dark:text-font-subtle-dark">#{{ venta.id_venta }}</span></h1>
+      <p class="mt-2 text-sm text-font-subtle-light dark:text-font-subtle-dark">Gestión y actualización de hitos de la venta.</p>
     </div>
+  </div>
 
-    <!-- CoreUI JS para funcionalidad de tabs -->
-    <script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5.0.0/dist/js/coreui.bundle.min.js"></script>
+  <div class="border border-base-200 dark:border-base-800 rounded-default mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <div class="p-5 border-b md:border-b-0 md:border-r border-base-200 dark:border-base-800"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Propiedad</div><div class="font-semibold">{{ venta.id_propiedad.condominio.alias_condominio }} - {{ venta.id_propiedad.etapa }} - N°{{ venta.id_propiedad.numero_propiedad }}</div><div class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">Rol: {{ venta.id_propiedad.rol }}</div></div>
+      <div class="p-5 border-b md:border-b-0 md:border-r border-base-200 dark:border-base-800"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Cliente</div><div class="font-semibold">{{ venta.id_cliente.nombres_1 }} {{ venta.id_cliente.nombres_2 }} {{ venta.id_cliente.apellidos_1 }} {{ venta.id_cliente.apellidos_2 }}</div><div class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">{{ venta.id_cliente.rut_cliente }}</div></div>
+      <div class="p-5"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Contacto</div><div class="font-semibold">{{ venta.id_cliente.telefono }}</div><div class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">{{ venta.id_cliente.correo }}</div></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 border-t border-base-200 dark:border-base-800">
+      <div class="p-5"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Estado de venta</div><span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400">{{ venta.estado_venta }}</span></div>
+      <div class="p-5"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Ejecutivo</div><div class="font-medium">{{ venta.ejecutivo|default:"—" }}</div></div>
+      <div class="p-5"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Fecha promesa</div><div class="font-medium">{{ venta.fecha_promesa|date:"d/m/Y" }}</div></div>
+      <div class="p-5"><div class="text-xs uppercase tracking-wide text-font-subtle-light dark:text-font-subtle-dark mb-2">Fecha venta</div><div class="font-medium">{{ venta.fecha_venta|date:"d/m/Y" }}</div></div>
+    </div>
+  </div>
+
+  <div class="border border-base-200 dark:border-base-800 rounded-default">
+    <div class="p-5 border-b border-base-200 dark:border-base-800"><h2 class="text-lg font-semibold">Etapas</h2><p class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">Seleccione una etapa para consultar o actualizar sus campos.</p></div>
+    <div class="p-5">
+      <div class="flex flex-wrap gap-2 mb-6" id="etapasTabs">
+        {% for etapa in etapas %}<button type="button" class="sarams-tab px-3 py-2 rounded-default text-sm font-medium border border-base-200 dark:border-base-800 {% if forloop.first %}bg-primary-600 text-white{% endif %}" data-target="etapa-pane-{{ etapa.id_etapa.id_etapa }}">{{ etapa.id_etapa.alias_etapa|default:etapa.id_etapa.nombre_etapa }}</button>{% endfor %}
+      </div>
+      {% for etapa in etapas %}
+      <div id="etapa-pane-{{ etapa.id_etapa.id_etapa }}" class="sarams-pane {% if not forloop.first %}hidden{% endif %}">
+        <form method="post">{% csrf_token %}
+          <h3 class="text-base font-semibold mb-5">{{ etapa.id_etapa.nombre_etapa }}</h3>
+          {% with campos=campos_etapas|dict_get:etapa.id_etapa.id_etapa %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {% for campo in campos %}<div><label class="block mb-2 text-sm font-medium">{{ campo.nombre_campo }}</label><input type="text" name="campo_{{ campo.id_campo_etapa }}" value="{{ valores_etapas|dict_get:etapa.id_etapa.id_etapa|get_valor:campo.id_campo_etapa|default:'' }}" class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"></div>{% endfor %}
+            </div>
+          {% endwith %}
+          <button type="submit" class="mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-default bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium"><span class="material-symbols-outlined text-lg">save</span>Guardar</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{const tabs=document.querySelectorAll('.sarams-tab'),panes=document.querySelectorAll('.sarams-pane');tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(t=>t.classList.remove('bg-primary-600','text-white'));panes.forEach(p=>p.classList.add('hidden'));tab.classList.add('bg-primary-600','text-white');document.getElementById(tab.dataset.target).classList.remove('hidden')}));});
+</script>
 {% endblock %}
