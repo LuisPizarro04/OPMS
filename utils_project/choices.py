@@ -266,3 +266,12 @@ no_disponible = 'No Disponible'
 
 IS_DISPONIBLE_CHOICES = [(disponible, 'Disponible'),
                          (no_disponible, 'No Disponible'), ]
+
+TIPO_DATO_CHOICES = [
+    ("Texto", "Texto"),
+    ("Fecha", "Fecha"),
+    ("Numero", "Número"),
+    ("Monto", "Monto"),
+    ("SiNo", "Sí / No"),
+    ("TextoLargo", "Texto largo"),
+]

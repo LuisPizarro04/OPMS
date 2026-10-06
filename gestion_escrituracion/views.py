@@ -1,6 +1,9 @@
 # Create your views here.
 import os
 # from unittest.mock import right
+from django.utils import timezone as django_timezone
+from aiohttp import request
+from aiohttp import request
 from django.views.generic import TemplateView
 from django.views import View
 from django.shortcuts import render, get_object_or_404, redirect
@@ -13,7 +16,7 @@ from .models import Venta, VentaEtapa, CampoEtapa, ValoresEtapa
 from gestion_contable.models import Pagos, ValorUf
 from django.template.loader import get_template
 from django.shortcuts import render, get_object_or_404, HttpResponse, HttpResponseRedirect, redirect
-from datetime import datetime
+from datetime import datetime, timezone
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema_view, extend_schema
@@ -25,18 +28,133 @@ from .serializers import (
     CampoEtapaSerializer,
     ValoresEtapaSerializer
 )
-
+from django.db.models import Prefetch, Q
+from gestion_propiedad.models import Propiedade, Condominio
 fecha_hoy = datetime.now()
 
 
 class ListaVentasView(TemplateView):
-    template_name = 'ventas/listado_ventas.html'
+    template_name = "ventas/listado_ventas.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(site.each_context(self.request))
-        context['ventas'] = Venta.objects.select_related('id_cliente', 'id_propiedad').filter(estado_venta="Promesa")
+
+        tipo_venta = self.request.GET.get("tipo_venta", "").strip()
+        ejecutivo = self.request.GET.get("ejecutivo", "").strip()
+        estado_hitos = self.request.GET.get("estado_hitos", "").strip()
+        buscar = self.request.GET.get("buscar", "").strip()
+        condominio = self.request.GET.get("condominio", "").strip()
+
+        ventas = (
+            Venta.objects.select_related(
+                "id_cliente",
+                "id_propiedad",
+            )
+            .prefetch_related(
+                Prefetch(
+                    "ventaetapa_set",
+                    queryset=VentaEtapa.objects.select_related("id_etapa"),
+                    to_attr="hitos_operacionales",
+                )
+            )
+            .filter(estado_venta="Promesa")
+        )
+
+        # Condominio
+        if condominio:
+            ventas = ventas.filter(
+                id_propiedad__condominio_id=condominio)
+        # Tipo de venta
+        if tipo_venta:
+            ventas = ventas.filter(tipo_venta=tipo_venta)
+
+        # Ejecutivo
+        if ejecutivo:
+            ventas = ventas.filter(ejecutivo=ejecutivo)
+
+        # Búsqueda general
+        if buscar:
+            ventas = ventas.filter(
+                Q(id_cliente__nombres_1__icontains=buscar)
+                | Q(id_cliente__nombres_2__icontains=buscar)
+                | Q(id_cliente__apellidos_1__icontains=buscar)
+                | Q(id_cliente__apellidos_2__icontains=buscar)
+                | Q(id_cliente__rut_cliente__icontains=buscar)
+                | Q(id_propiedad__numero_propiedad__icontains=buscar)
+            )
+
+        # Evaluamos el queryset antes de calcular los estados
+        ventas = list(ventas)
+
+        for venta in ventas:
+            hitos = venta.hitos_operacionales
+
+            venta.total_hitos = len(hitos)
+
+            venta.hitos_completados = sum(
+                1 for hito in hitos if hito.fecha_fin
+            )
+
+            venta.hitos_en_proceso = sum(
+                1
+                for hito in hitos
+                if hito.fecha_inicio and not hito.fecha_fin
+            )
+
+            venta.hitos_pendientes = sum(
+                1
+                for hito in hitos
+                if not hito.fecha_inicio and not hito.fecha_fin
+            )
+
+        # Filtro operacional
+        if estado_hitos == "en_proceso":
+            ventas = [
+                venta
+                for venta in ventas
+                if venta.hitos_en_proceso > 0
+            ]
+
+        elif estado_hitos == "sin_iniciar":
+            ventas = [
+                venta
+                for venta in ventas
+                if venta.hitos_pendientes == venta.total_hitos
+            ]
+
+        elif estado_hitos == "completados":
+            ventas = [
+                venta
+                for venta in ventas
+                if venta.total_hitos > 0
+                and venta.hitos_completados == venta.total_hitos
+            ]
+
+        context["ventas"] = ventas
+        context["condominios"] = Condominio.objects.all().order_by("alias_condominio")
+
+        # Opciones para los filtros
+        context["ejecutivos"] = (
+            Venta.objects.filter(estado_venta="Promesa")
+            .exclude(ejecutivo__isnull=True)
+            .exclude(ejecutivo="")
+            .values_list("ejecutivo", flat=True)
+            .distinct()
+            .order_by("ejecutivo")
+        )
+
+        # Mantener selección después de filtrar
+        context["filtros"] = {
+            "condominio": condominio,
+            "tipo_venta": tipo_venta,
+            "ejecutivo": ejecutivo,
+            "estado_hitos": estado_hitos,
+            "buscar": buscar,
+        }
+
         return context
+    
 
 
 class EtapasVentaView(View):
@@ -70,7 +188,91 @@ class EtapasVentaView(View):
     def post(self, request, venta_id):
         venta = get_object_or_404(Venta, id_venta=venta_id)
         etapas = VentaEtapa.objects.filter(id_venta=venta).select_related('id_etapa')
+        accion = request.POST.get("accion")
+        venta_etapa_id = request.POST.get("venta_etapa_id")
+        
+        if accion == "iniciar_hito" and venta_etapa_id:
+            venta_etapa = get_object_or_404(
+                VentaEtapa,
+                id_venta_etapa=venta_etapa_id,
+                id_venta=venta
+            )
+            if not venta_etapa.fecha_inicio:
+                venta_etapa.fecha_inicio = django_timezone.localdate()
+                venta_etapa.save(update_fields=["fecha_inicio"])
+                messages.success(
+                    request,
+                    f"Hito {venta_etapa.id_etapa.alias_etapa} iniciado correctamente."
+                )
+            return redirect(request.path)       
 
+        if accion == "completar_hito" and venta_etapa_id:
+            venta_etapa = get_object_or_404(
+                VentaEtapa,
+                id_venta_etapa=venta_etapa_id,
+                id_venta=venta,
+            )
+            
+            # Guardar los campos enviados antes de validar
+            campos_etapa = CampoEtapa.objects.filter(
+                id_etapa=venta_etapa.id_etapa
+            )
+
+            for campo in campos_etapa:
+                field_name = f"campo_{campo.id_campo_etapa}"
+
+                if field_name in request.POST:
+                    valor = request.POST.get(field_name, "").strip()
+
+                    ValoresEtapa.objects.update_or_create(
+                        id_venta_etapa=venta_etapa,
+                        id_campo_etapa=campo,
+                        defaults={
+                            "valor_campo": valor
+                        }
+                    )
+
+            # Campos obligatorios configurados para este hito
+            campos_obligatorios = CampoEtapa.objects.filter(
+                id_etapa=venta_etapa.id_etapa,
+                obligatorio=True,
+            )
+
+            campos_faltantes = []
+
+            for campo in campos_obligatorios:
+                valor = ValoresEtapa.objects.filter(
+                    id_venta_etapa=venta_etapa,
+                    id_campo_etapa=campo,
+                ).first()
+
+                if not valor or not valor.valor_campo or not valor.valor_campo.strip():
+                    campos_faltantes.append(campo.nombre_campo)
+
+            # No permitir completar si faltan campos obligatorios
+            if campos_faltantes:
+                messages.error(
+                    request,
+                    "No se puede completar el hito. "
+                    "Complete los campos obligatorios: "
+                    + ", ".join(campos_faltantes)
+                    + ".",
+                )
+
+                return redirect(request.path)
+
+            # Completar hito
+            if venta_etapa.fecha_inicio and not venta_etapa.fecha_fin:
+                venta_etapa.fecha_fin = django_timezone.localdate()
+                venta_etapa.save(update_fields=["fecha_fin"])
+
+                messages.success(
+                    request,
+                    f"Hito {venta_etapa.id_etapa.alias_etapa} completado correctamente.",
+                )
+
+            return redirect(request.path)
+        
         for etapa in etapas:
             campos = CampoEtapa.objects.filter(id_etapa=etapa.id_etapa)
             for campo in campos:
@@ -87,7 +289,7 @@ class EtapasVentaView(View):
                         valor_etapa.save()
 
         messages.success(request, "Los datos fueron guardados correctamente.")
-        return redirect('editar_etapas', venta_id=venta.id_venta)
+        return redirect(request.path)
 
 
 from django.shortcuts import render

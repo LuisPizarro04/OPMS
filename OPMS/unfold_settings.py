@@ -249,13 +249,13 @@ UNFOLD = {
             # REPORTES
             # ====================================================
             {
-                "title": "Reportes",
+                "title": ("Gestión Operacional"),
                 "separator": True,
                 "collapsible": True,
                 "items": [
                     {
-                        "title": "Hitos",
-                        "icon": "monitoring",
+                        "title": ("Hitos Operacionales"),
+                        "icon": "account_tree",
                         "link": reverse_lazy("lista_ventas"),
                     },
                 ],

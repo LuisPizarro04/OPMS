@@ -142,7 +142,12 @@ class CampoEtapa(models.Model):
     id_campo_etapa = models.AutoField(primary_key=True)
     id_etapa = models.ForeignKey(Etapas, on_delete=models.CASCADE)
     nombre_campo = models.CharField(verbose_name='Nombre Campo', max_length=50, blank=True, null=True)
-    tipo_dato = models.CharField(verbose_name='Tipo de Datos', max_length=50, blank=True, null=True)
+    tipo_dato = models.CharField(
+    max_length=20,
+    choices=TIPO_DATO_CHOICES,
+    default="Texto",
+    verbose_name="Tipo de dato",
+)
     obligatorio = models.BooleanField(verbose_name='Obligatorio', default=False)
     descripcion_campo = models.TextField(verbose_name='Descripcion Campo', max_length=50, blank=True, null=True)
 
@@ -161,7 +166,11 @@ class ValoresEtapa(models.Model):
     id_valores_etapa = models.AutoField(primary_key=True)
     id_venta_etapa = models.ForeignKey(VentaEtapa, on_delete=models.CASCADE)
     id_campo_etapa = models.ForeignKey(CampoEtapa, on_delete=models.CASCADE)
-    valor_campo = models.CharField(verbose_name='Valor Campo', max_length=50, blank=True, null=True)
+    valor_campo = models.TextField(
+    blank=True,
+    null=True,
+    verbose_name="Valor"
+)
 
     class Meta:
         db_table = 'valores_etapas'

@@ -9,6 +9,55 @@
   <div class="flex flex-col gap-4 mb-8 lg:flex-row lg:items-center lg:justify-between">
     <div>
       <a href="{% url 'lista_ventas' %}" class="inline-flex items-center gap-1 mb-3 text-sm text-font-subtle-light dark:text-font-subtle-dark hover:text-primary-600"><span class="material-symbols-outlined text-lg">arrow_back</span>Volver a Hitos</a>
+      {% if messages %}
+    <div class="mb-6 space-y-3">
+        {% for message in messages %}
+
+            <div class="
+                flex items-start gap-3
+                px-4 py-3
+                rounded-default
+                border
+
+                {% if message.tags == 'error' %}
+                    bg-red-50 border-red-200 text-red-700
+                    dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400
+
+                {% elif message.tags == 'success' %}
+                    bg-green-50 border-green-200 text-green-700
+                    dark:bg-green-500/10 dark:border-green-500/30 dark:text-green-400
+
+                {% elif message.tags == 'warning' %}
+                    bg-amber-50 border-amber-200 text-amber-700
+                    dark:bg-amber-500/10 dark:border-amber-500/30 dark:text-amber-400
+
+                {% else %}
+                    bg-blue-50 border-blue-200 text-blue-700
+                    dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400
+                {% endif %}
+            ">
+
+                <span class="material-symbols-outlined text-lg">
+                    {% if message.tags == 'error' %}
+                        error
+                    {% elif message.tags == 'success' %}
+                        check_circle
+                    {% elif message.tags == 'warning' %}
+                        warning
+                    {% else %}
+                        info
+                    {% endif %}
+                </span>
+
+                <span class="text-sm font-medium">
+                    {{ message }}
+                </span>
+
+            </div>
+
+        {% endfor %}
+    </div>
+{% endif %}
       <h1 class="text-2xl font-semibold text-font-important-light dark:text-font-important-dark">Información de la Venta <span class="text-font-subtle-light dark:text-font-subtle-dark">#{{ venta.id_venta }}</span></h1>
       <p class="mt-2 text-sm text-font-subtle-light dark:text-font-subtle-dark">Gestión y actualización de hitos de la venta.</p>
     </div>
@@ -32,17 +81,213 @@
     <div class="p-5 border-b border-base-200 dark:border-base-800"><h2 class="text-lg font-semibold">Etapas</h2><p class="mt-1 text-sm text-font-subtle-light dark:text-font-subtle-dark">Seleccione una etapa para consultar o actualizar sus campos.</p></div>
     <div class="p-5">
       <div class="flex flex-wrap gap-2 mb-6" id="etapasTabs">
-        {% for etapa in etapas %}<button type="button" class="sarams-tab px-3 py-2 rounded-default text-sm font-medium border border-base-200 dark:border-base-800 {% if forloop.first %}bg-primary-600 text-white{% endif %}" data-target="etapa-pane-{{ etapa.id_etapa.id_etapa }}">{{ etapa.id_etapa.alias_etapa|default:etapa.id_etapa.nombre_etapa }}</button>{% endfor %}
-      </div>
+
+    {% for etapa in etapas %}
+
+        <button
+            type="button"
+            class="sarams-tab inline-flex items-center gap-1.5 px-3 py-2
+                   rounded-default text-sm font-medium
+                   border border-base-200 dark:border-base-800
+                   {% if forloop.first %}bg-primary-600 text-white{% endif %}"
+            data-target="etapa-pane-{{ etapa.id_etapa.id_etapa }}"
+        >
+
+            {% if etapa.fecha_fin %}
+
+                <span
+                    class="material-symbols-outlined text-base text-green-600 sarams-status-icon"
+                    title="Completado"
+                >
+                    check_circle
+                </span>
+
+            {% elif etapa.fecha_inicio %}
+
+                <span
+                    class="material-symbols-outlined text-base text-amber-500 sarams-status-icon"
+                    title="En proceso"
+                >
+                    pending
+                </span>
+
+            {% else %}
+
+                <span
+                    class="material-symbols-outlined text-base text-base-400 sarams-status-icon"
+                    title="Pendiente"
+                >
+                    radio_button_unchecked
+                </span>
+
+            {% endif %}
+
+            <span>
+                {{ etapa.id_etapa.alias_etapa|default:etapa.id_etapa.nombre_etapa }}
+            </span>
+
+        </button>
+
+    {% endfor %}
+
+</div>
       {% for etapa in etapas %}
       <div id="etapa-pane-{{ etapa.id_etapa.id_etapa }}" class="sarams-pane {% if not forloop.first %}hidden{% endif %}">
-        <form method="post">{% csrf_token %}
-          <h3 class="text-base font-semibold mb-5">{{ etapa.id_etapa.nombre_etapa }}</h3>
-          {% with campos=campos_etapas|dict_get:etapa.id_etapa.id_etapa %}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {% for campo in campos %}<div><label class="block mb-2 text-sm font-medium">{{ campo.nombre_campo }}</label><input type="text" name="campo_{{ campo.id_campo_etapa }}" value="{{ valores_etapas|dict_get:etapa.id_etapa.id_etapa|get_valor:campo.id_campo_etapa|default:'' }}" class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"></div>{% endfor %}
+        <div class="flex flex-col gap-3 mb-5 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-wrap items-center gap-3">
+            <h3 class="text-base font-semibold">{{ etapa.id_etapa.nombre_etapa }}</h3>
+            {% if etapa.fecha_fin %}
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"><span class="material-symbols-outlined text-base">check_circle</span>Completado</span>
+            {% elif etapa.fecha_inicio %}
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400"><span class="material-symbols-outlined text-base">pending</span>En proceso</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-base-100 text-font-subtle-light dark:bg-base-800 dark:text-font-subtle-dark"><span class="material-symbols-outlined text-base">radio_button_unchecked</span>Pendiente</span>
+            {% endif %}
+            {% if etapa.fecha_inicio or etapa.fecha_fin %}
+
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+
+        {% if etapa.fecha_inicio %}
+            <div class="flex items-center gap-2 text-font-subtle-light dark:text-font-subtle-dark">
+                <span class="material-symbols-outlined text-lg">
+                    play_circle
+                </span>
+
+                <span>
+                    Inicio:
+                    <strong class="text-font-important-light dark:text-font-important-dark">
+                        {{ etapa.fecha_inicio|date:"d/m/Y" }}
+                    </strong>
+                </span>
             </div>
-          {% endwith %}
+        {% endif %}
+
+        {% if etapa.fecha_fin %}
+            <div class="flex items-center gap-2 text-font-subtle-light dark:text-font-subtle-dark">
+                <span class="material-symbols-outlined text-lg">
+                    check_circle
+                </span>
+
+                <span>
+                    Finalización:
+                    <strong class="text-font-important-light dark:text-font-important-dark">
+                        {{ etapa.fecha_fin|date:"d/m/Y" }}
+                    </strong>
+                </span>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endif %}
+          </div>
+          {% if not etapa.fecha_inicio and not etapa.fecha_fin %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="accion" value="iniciar_hito">
+              <input type="hidden" name="venta_etapa_id" value="{{ etapa.id_venta_etapa }}">
+              <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-default bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium"><span class="material-symbols-outlined text-lg">play_arrow</span>Iniciar hito</button>
+            </form>
+          {% elif etapa.fecha_inicio and not etapa.fecha_fin %}
+            <button
+              type="submit"
+              name="accion"
+              value="completar_hito"
+              form="form-etapa-{{ etapa.id_venta_etapa }}"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-default bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium"
+            >
+              <span class="material-symbols-outlined text-lg">check</span>Completar hito
+            </button>
+          {% endif %}
+        </div>
+        <form method="post" id="form-etapa-{{ etapa.id_venta_etapa }}">
+          {% csrf_token %}
+          <input type="hidden" name="venta_etapa_id" value="{{ etapa.id_venta_etapa }}">
+          {% with campos=campos_etapas|dict_get:etapa.id_etapa.id_etapa %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        {% for campo in campos %}
+            <div>
+                <label class="block mb-2 text-sm font-medium">
+                    {{ campo.nombre_campo }}
+
+                    {% if campo.obligatorio %}
+                        <span class="text-red-600">*</span>
+                    {% endif %}
+                </label>
+
+                {% with valor=valores_etapas|dict_get:etapa.id_etapa.id_etapa|get_valor:campo.id_campo_etapa %}
+
+                    {% if campo.tipo_dato == "Fecha" %}
+
+                        <input
+                            type="date"
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            value="{{ valor|default:'' }}"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >
+
+                    {% elif campo.tipo_dato == "Numero" %}
+
+                        <input
+                            type="number"
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            value="{{ valor|default:'' }}"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >
+
+                    {% elif campo.tipo_dato == "Monto" %}
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            value="{{ valor|default:'' }}"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >
+
+                    {% elif campo.tipo_dato == "SiNo" %}
+
+                        <select
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >
+                            <option value="">Seleccione...</option>
+                            <option value="Si" {% if valor == "Si" %}selected{% endif %}>Sí</option>
+                            <option value="No" {% if valor == "No" %}selected{% endif %}>No</option>
+                        </select>
+
+                    {% elif campo.tipo_dato == "TextoLargo" %}
+
+                        <textarea
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            rows="4"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >{{ valor|default:'' }}</textarea>
+
+                    {% else %}
+
+                        <input
+                            type="text"
+                            name="campo_{{ campo.id_campo_etapa }}"
+                            value="{{ valor|default:'' }}"
+                            {% if campo.obligatorio %}required{% endif %}
+                            class="w-full rounded-default border border-base-200 bg-white px-3 py-2 text-sm dark:border-base-700 dark:bg-base-900"
+                        >
+
+                    {% endif %}
+
+                {% endwith %}
+            </div>
+        {% endfor %}
+
+    </div>
+{% endwith %}
           <button type="submit" class="mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-default bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium"><span class="material-symbols-outlined text-lg">save</span>Guardar</button>
         </form>
       </div>
