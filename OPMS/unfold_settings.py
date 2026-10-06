@@ -180,16 +180,6 @@ UNFOLD = {
                             "gestion_escrituracion.view_venta"
                         ),
                     },
-                    {
-                        "title": "Ventas Etapas",
-                        "icon": "timeline",
-                        "link": reverse_lazy(
-                            "admin:gestion_escrituracion_ventaetapa_changelist"
-                        ),
-                        "permission": has_perm(
-                            "gestion_escrituracion.view_ventaetapa"
-                        ),
-                    },
                 ],
             },
 
