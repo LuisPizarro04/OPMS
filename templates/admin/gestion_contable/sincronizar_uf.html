@@ -1,0 +1,70 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load i18n unfold %}
+
+{% block content %}
+
+<div class="max-w-2xl">
+
+    <div class="mb-8">
+        <h1 class="font-semibold text-2xl text-font-important-light dark:text-font-important-dark">
+            Sincronizar UF
+        </h1>
+
+        <p class="mt-2 text-font-subtle-light dark:text-font-subtle-dark">
+            Obtiene los valores oficiales de la UF desde el Banco Central de Chile.
+            Los registros existentes serán actualizados y los faltantes serán creados.
+        </p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-5">
+            <label class="block font-medium mb-2 text-sm">
+                Desde
+            </label>
+
+            {{ form.fecha_inicio }}
+
+            {% for error in form.fecha_inicio.errors %}
+                <p class="mt-2 text-red-600 text-sm">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+
+        <div class="mb-5">
+            <label class="block font-medium mb-2 text-sm">
+                Hasta
+            </label>
+
+            {{ form.fecha_fin }}
+
+            {% for error in form.fecha_fin.errors %}
+                <p class="mt-2 text-red-600 text-sm">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+
+        {% for error in form.non_field_errors %}
+            <p class="mb-4 text-red-600 text-sm">
+                {{ error }}
+            </p>
+        {% endfor %}
+
+        <div class="mt-6">
+            <button
+                type="submit"
+                class="bg-primary-600 border border-transparent font-medium px-4 py-2 rounded-default text-sm text-white"
+            >
+                Sincronizar UF
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

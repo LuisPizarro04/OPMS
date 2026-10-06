@@ -14,6 +14,11 @@ from pathlib import Path
 # from OPMS.jazzmin_settings import JAZZMIN_SETTINGS, JAZZMIN_UI_TWEAKS
 from OPMS.database import *
 from OPMS.unfold_settings import UNFOLD
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(BASE_DIR / ".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -144,7 +149,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Puedes cambiar 'staticfil
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+BCCH_API_TOKEN = os.getenv("BCCH_API_TOKEN")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

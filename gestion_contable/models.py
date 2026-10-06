@@ -88,7 +88,10 @@ class Pagos(models.Model):
 
 class ValorUf(models.Model):
     id_valor_uf = models.AutoField(primary_key=True)
-    fecha_registro = models.DateField(verbose_name="Fecha de registro")
+    fecha_registro = models.DateField(
+        verbose_name="Fecha de registro",
+        unique=True,
+    )
     valor_uf = models.FloatField(verbose_name="Valor de UF")
 
     class Meta:
