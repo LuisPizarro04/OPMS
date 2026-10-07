@@ -1,0 +1,679 @@
+/* Ocultamos el contenedor visual estándar de Unfold
+           y utilizamos toda la pantalla para SARAMS */
+body {
+    background: #0d1728 !important;
+}
+
+.sarams-login {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(430px, 0.85fr);
+    min-height: 100vh;
+    background: #0d1728;
+    color: #fff;
+}
+
+/* HERO ------------------------------------------------ */
+
+.sarams-hero {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background-image: linear-gradient(90deg,
+        rgba(8, 22, 42, .84) 0%,
+        rgba(8, 25, 48, .68) 45%,
+        rgba(8, 22, 42, .42) 100%),
+    url("../images/login/sarams-login-bg.png");
+    background-size: cover;
+    background-position: center;
+}
+
+.sarams-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    padding: clamp(42px, 6vw, 90px);
+    box-sizing: border-box;
+}
+
+.sarams-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sarams-brand-name {
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: .22em;
+}
+
+.sarams-brand-description {
+    max-width: 340px;
+    color: rgba(255, 255, 255, .72);
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.sarams-copy {
+    max-width: 540px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.sarams-accent {
+    width: 42px;
+    height: 4px;
+    margin-bottom: 28px;
+    border-radius: 999px;
+    background: #2563eb;
+}
+
+.sarams-copy h1 {
+    margin: 0;
+    max-width: 520px;
+    color: #fff;
+    font-size: clamp(38px, 4vw, 62px);
+    line-height: 1.06;
+    font-weight: 650;
+    letter-spacing: -.035em;
+}
+
+.sarams-copy p {
+    max-width: 470px;
+    margin: 24px 0 0;
+    color: rgba(255, 255, 255, .72);
+    font-size: clamp(16px, 1.5vw, 20px);
+    line-height: 1.65;
+}
+
+.sarams-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    max-width: 650px;
+}
+
+.sarams-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 50px;
+    padding-right: 20px;
+}
+
+.sarams-feature+.sarams-feature {
+    padding-left: 20px;
+    border-left: 1px solid rgba(255, 255, 255, .20);
+}
+
+.sarams-feature .material-symbols-outlined {
+    color: rgba(255, 255, 255, .9);
+    font-size: 29px;
+}
+
+.sarams-feature span:last-child {
+    color: rgba(255, 255, 255, .86);
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+/* LOGIN ------------------------------------------------ */
+
+.sarams-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 48px;
+    box-sizing: border-box;
+    background:
+        radial-gradient(circle at 30% 30%,
+            rgba(37, 99, 235, .07),
+            transparent 35%),
+        #0d1728;
+}
+
+.sarams-auth-inner {
+    width: min(100%, 480px);
+}
+
+.sarams-auth-eyebrow {
+    margin: 0 0 5px;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.sarams-auth-title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(44px, 4vw, 60px);
+    line-height: 1;
+    font-weight: 650;
+    letter-spacing: .04em;
+}
+
+.sarams-auth-subtitle {
+    margin: 20px 0 46px;
+    color: #94a3b8;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.sarams-errors {
+    margin-bottom: 24px;
+}
+
+.sarams-error-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(239, 68, 68, .30);
+    border-radius: 8px;
+    background: rgba(239, 68, 68, .10);
+    color: #fecaca;
+}
+
+.sarams-error-message>.material-symbols-outlined {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: #f87171;
+    font-size: 20px;
+}
+
+.sarams-field {
+    margin-bottom: 24px;
+}
+
+.sarams-field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sarams-field label span {
+    color: #ef4444;
+}
+
+.sarams-input-wrap {
+    position: relative;
+}
+
+.sarams-input-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    z-index: 2;
+    color: #64748b;
+    font-size: 21px;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.sarams-field input {
+    width: 100% !important;
+    height: 56px !important;
+    box-sizing: border-box !important;
+    padding: 0 48px !important;
+    border: 1px solid #334155 !important;
+    border-radius: 9px !important;
+    outline: none !important;
+    background: rgba(15, 29, 49, .72) !important;
+    color: #f8fafc !important;
+    font-size: 15px !important;
+    box-shadow: none !important;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.sarams-field input::placeholder {
+    color: #64748b !important;
+}
+
+.sarams-field input:focus {
+    border-color: #2563eb !important;
+    background: rgba(15, 29, 49, 1) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .15) !important;
+}
+
+.sarams-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.sarams-password-toggle:hover {
+    color: #cbd5e1;
+}
+
+.sarams-password-toggle .material-symbols-outlined {
+    font-size: 21px;
+}
+
+.sarams-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 56px;
+    margin-top: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+.sarams-submit:hover {
+    background: #1d4ed8;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, .20);
+}
+
+.sarams-submit:active {
+    transform: translateY(1px);
+}
+
+.sarams-submit .material-symbols-outlined {
+    position: relative;
+    left: 0;
+    font-size: 18px;
+    transition: left .2s ease;
+}
+
+.sarams-submit:hover .material-symbols-outlined {
+    left: 3px;
+}
+
+.sarams-password-reset {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.sarams-password-reset a {
+    color: #94a3b8;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.sarams-password-reset a:hover {
+    color: #fff;
+}
+
+.sarams-mobile-brand {
+    display: none;
+}
+
+/* RESPONSIVE ------------------------------------------- */
+
+@media (max-width: 1000px) {
+    .sarams-login {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .sarams-hero-inner {
+        padding: 48px;
+    }
+
+    .sarams-features {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .sarams-feature+.sarams-feature {
+        padding-left: 0;
+        border-left: 0;
+    }
+}
+
+@media (max-width: 760px) {
+    .sarams-login {
+        display: block;
+        overflow-y: auto;
+    }
+
+    .sarams-hero {
+        display: none;
+    }
+
+    .sarams-auth {
+        min-height: 100vh;
+        padding: 32px 24px;
+    }
+
+    .sarams-mobile-brand {
+        display: block;
+        margin-bottom: 55px;
+        color: #2563eb;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: .14em;
+    }
+
+    .sarams-auth-title {
+        font-size: 42px;
+    }
+}
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.sarams-logout {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(430px, 0.85fr);
+    min-height: 100vh;
+    background: #0d1728;
+    color: #fff;
+}
+
+.sarams-success-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(34, 197, 94, .25);
+    border-radius: 50%;
+    background: rgba(34, 197, 94, .08);
+    color: #4ade80;
+}
+
+.sarams-success-icon .material-symbols-outlined {
+    font-size: 28px;
+}
+
+.sarams-auth-title {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(38px, 4vw, 52px);
+    line-height: 1.05;
+    font-weight: 650;
+    letter-spacing: -.025em;
+}
+
+.sarams-auth-subtitle {
+    max-width: 420px;
+    margin: 20px 0 38px;
+    color: #94a3b8;
+    font-size: 16px;
+    line-height: 1.65;
+}
+
+.sarams-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 56px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+.sarams-login-button:hover {
+    background: #1d4ed8;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, .20);
+}
+
+.sarams-login-button:active {
+    transform: translateY(1px);
+}
+
+.sarams-login-button .material-symbols-outlined {
+    position: relative;
+    left: 0;
+    font-size: 18px;
+    transition: left .2s ease;
+}
+
+.sarams-login-button:hover .material-symbols-outlined {
+    left: 3px;
+}
+
+.sarams-security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 22px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.sarams-security .material-symbols-outlined {
+    font-size: 16px;
+}
+@media (max-width: 1000px) {
+    .sarams-logout {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .sarams-logout {
+        display: block;
+        overflow-y: auto;
+    }
+
+    .sarams-auth-title {
+        font-size: 40px;
+    }
+}
+/* =========================================================
+   PASSWORD RESET
+   ========================================================= */
+
+.sarams-reset-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 24px;
+
+    border: 1px solid rgba(37, 99, 235, .35);
+    border-radius: 50%;
+
+    background: rgba(37, 99, 235, .10);
+    color: #60a5fa;
+}
+
+.sarams-reset-icon .material-symbols-outlined {
+    font-size: 24px;
+}
+
+.sarams-reset-back {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 24px;
+}
+
+.sarams-reset-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #93c5fd;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition: color .2s ease;
+}
+
+.sarams-reset-back a:hover {
+    color: #bfdbfe;
+}
+
+.sarams-reset-back .material-symbols-outlined {
+    font-size: 17px;
+}
+.sarams-auth-heading h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.sarams-auth-heading p {
+    margin: 14px 0 32px;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 400;
+}
+@media (max-width: 760px) {
+    .sarams-auth-heading h1 {
+        font-size: 28px;
+    }
+
+    .sarams-auth-heading p {
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+}
+/* =========================================================
+   PASSWORD RESET - EMAIL SENT
+   ========================================================= */
+
+.sarams-reset-success-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+
+    margin-bottom: 28px;
+
+    border: 1px solid rgba(34, 197, 94, .25);
+    border-radius: 50%;
+
+    background: rgba(34, 197, 94, .08);
+    color: #4ade80;
+}
+
+.sarams-reset-success-icon .material-symbols-outlined {
+    font-size: 26px;
+}
+
+.sarams-reset-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    margin: 0 0 28px;
+    padding: 14px 16px;
+
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 8px;
+
+    background: rgba(15, 23, 42, .35);
+
+    color: #94a3b8;
+}
+
+.sarams-reset-info .material-symbols-outlined {
+    flex-shrink: 0;
+    margin-top: 1px;
+
+    color: #60a5fa;
+    font-size: 18px;
+}
+
+.sarams-reset-info p {
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.55;
+}
+/* =========================================================
+   PASSWORD RESET - NEW PASSWORD
+   ========================================================= */
+
+.sarams-field-errors {
+    margin-top: 8px;
+}
+
+.sarams-field-errors p {
+    margin: 0 0 4px;
+    color: #fca5a5;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.sarams-invalid-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+
+    margin-bottom: 28px;
+
+    border: 1px solid rgba(239, 68, 68, .30);
+    border-radius: 50%;
+
+    background: rgba(239, 68, 68, .08);
+    color: #f87171;
+}
+
+.sarams-invalid-icon .material-symbols-outlined {
+    font-size: 26px;
+}

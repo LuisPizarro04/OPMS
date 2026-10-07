@@ -1,0 +1,284 @@
+{% extends "unfold/layouts/unauthenticated.html" %}
+
+{% load i18n static unfold %}
+
+{% block extrastyle %}
+{{ block.super }}
+{{ form.media }}
+<link rel="stylesheet" href="{% static 'css/sarams-auth.css' %}">
+
+{% endblock %}
+
+
+{% block title %}
+Iniciar sesión | SARAMS
+{% endblock %}
+
+
+{% block content %}
+
+<div class="sarams-login">
+
+    <!-- Panel inmobiliario -->
+    <section class="sarams-hero">
+        <div class="sarams-hero-inner">
+
+            <div class="sarams-brand">
+                <div class="sarams-brand-name">SARAMS</div>
+
+                <div class="sarams-brand-description">
+                    Sistema de Administración<br>
+                    y Gestión Inmobiliaria
+                </div>
+            </div>
+
+            <div class="sarams-copy">
+                <div class="sarams-accent"></div>
+
+                <h1>
+                    Gestión inmobiliaria<br>
+                    centralizada.
+                </h1>
+
+                <p>
+                    Administra clientes, propiedades, ventas y operaciones
+                    desde una sola plataforma.
+                </p>
+            </div>
+
+            <div class="sarams-features">
+
+                <div class="sarams-feature">
+                    <span class="material-symbols-outlined">
+                        apartment
+                    </span>
+                    <span>
+                        Proyectos<br>
+                        inmobiliarios
+                    </span>
+                </div>
+
+                <div class="sarams-feature">
+                    <span class="material-symbols-outlined">
+                        groups
+                    </span>
+                    <span>
+                        Clientes<br>
+                        y ventas
+                    </span>
+                </div>
+
+                <div class="sarams-feature">
+                    <span class="material-symbols-outlined">
+                        monitoring
+                    </span>
+                    <span>
+                        Operación<br>
+                        y seguimiento
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Panel de autenticación -->
+    <section class="sarams-auth">
+
+        <div class="sarams-auth-inner">
+
+            <div class="sarams-mobile-brand">
+                SARAMS
+            </div>
+
+            <p class="sarams-auth-eyebrow">
+                Bienvenido a
+            </p>
+
+            <h1 class="sarams-auth-title">
+                SARAMS
+            </h1>
+
+            <p class="sarams-auth-subtitle">
+                Ingresa tus credenciales para continuar.
+            </p>
+
+
+            {% include "unfold/helpers/messages.html" %}
+
+
+            {% if form.errors or form.non_field_errors %}
+
+            <div class="sarams-errors">
+
+                {% if user.is_authenticated %}
+
+                <div class="sarams-error-message">
+                    <span class="material-symbols-outlined">
+                        error
+                    </span>
+
+                    <div>
+                        <strong>Acceso no autorizado</strong>
+                        <p>
+                            Tu cuenta no tiene permisos para acceder a esta sección.
+                        </p>
+                    </div>
+                </div>
+
+                {% else %}
+
+                <div class="sarams-error-message">
+                    <span class="material-symbols-outlined">
+                        error
+                    </span>
+
+                    <div>
+                        <strong>No pudimos iniciar sesión</strong>
+                        <p>
+                            El nombre de usuario o la contraseña son incorrectos.
+                        </p>
+                    </div>
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+
+            {% block login_before %}{% endblock %}
+
+
+            <form action="{{ app_path }}" method="post" id="login-form">
+
+                {% csrf_token %}
+
+                <div class="sarams-field">
+
+                    <label for="{{ form.username.id_for_label }}">
+                        Nombre de usuario <span>*</span>
+                    </label>
+
+                    <div class="sarams-input-wrap">
+
+                        <span class="material-symbols-outlined sarams-input-icon">
+                            person
+                        </span>
+
+                        {{ form.username }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="sarams-field">
+
+                    <label for="{{ form.password.id_for_label }}">
+                        Contraseña <span>*</span>
+                    </label>
+
+                    <div class="sarams-input-wrap">
+
+                        <span class="material-symbols-outlined sarams-input-icon">
+                            lock
+                        </span>
+
+                        {{ form.password }}
+
+                        <button type="button" class="sarams-password-toggle" id="password-toggle"
+                            aria-label="Mostrar contraseña">
+                            <span class="material-symbols-outlined">
+                                visibility_off
+                            </span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit" class="sarams-submit">
+
+                    <span>
+                        Iniciar sesión
+                    </span>
+
+                    <span class="material-symbols-outlined">
+                        arrow_forward
+                    </span>
+
+                </button>
+
+
+                {% url 'admin_password_reset' as password_reset_url %}
+                {% url 'admin:admin_password_reset' as unfold_password_reset_url %}
+
+                {% if password_reset_url or unfold_password_reset_url %}
+
+                <div class="sarams-password-reset">
+
+                    <a href="{{ password_reset_url|default:unfold_password_reset_url }}">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </form>
+
+
+            {% block login_after %}{% endblock %}
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const passwordInput = document.getElementById(
+            "{{ form.password.id_for_label }}"
+        );
+
+        const toggle = document.getElementById("password-toggle");
+
+        if (!passwordInput || !toggle) {
+            return;
+        }
+
+        const icon = toggle.querySelector(
+            ".material-symbols-outlined"
+        );
+
+        toggle.addEventListener("click", function () {
+
+            const hidden = passwordInput.type === "password";
+
+            passwordInput.type = hidden ? "text" : "password";
+
+            icon.textContent = hidden
+                ? "visibility"
+                : "visibility_off";
+
+            toggle.setAttribute(
+                "aria-label",
+                hidden
+                    ? "Ocultar contraseña"
+                    : "Mostrar contraseña"
+            );
+
+        });
+
+    });
+</script>
+
+{% endblock %}

@@ -192,3 +192,19 @@ SPECTACULAR_SETTINGS = {
     },
     # OTHER SETTINGS
 }
+
+# ==========================================
+# AUTENTICACIÓN
+# ==========================================
+
+LOGIN_URL = "/admin/login/"
+LOGIN_REDIRECT_URL = "/admin/"
+
+
+# ==========================================
+# EMAIL - DESARROLLO
+# ==========================================
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = "SARAMS <no-reply@localhost>"

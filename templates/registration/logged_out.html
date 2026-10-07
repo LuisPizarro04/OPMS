@@ -1,0 +1,173 @@
+{% extends "unfold/layouts/unauthenticated.html" %}
+
+{% load static unfold %}
+
+{% block title %}
+    Sesión finalizada | SARAMS
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/sarams-auth.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="sarams-logout">
+
+    <!-- Panel inmobiliario -->
+
+    <section class="sarams-hero">
+
+        <div class="sarams-hero-inner">
+
+            <div class="sarams-brand">
+
+                <div class="sarams-brand-name">
+                    SARAMS
+                </div>
+
+                <div class="sarams-brand-description">
+                    Sistema de Administración<br>
+                    y Gestión Inmobiliaria
+                </div>
+
+            </div>
+
+
+            <div class="sarams-copy">
+
+                <div class="sarams-accent"></div>
+
+                <h1>
+                    Gestión inmobiliaria<br>
+                    centralizada.
+                </h1>
+
+                <p>
+                    Administra clientes, propiedades, ventas y operaciones
+                    desde una sola plataforma.
+                </p>
+
+            </div>
+
+
+            <div class="sarams-features">
+
+                <div class="sarams-feature">
+
+                    <span class="material-symbols-outlined">
+                        apartment
+                    </span>
+
+                    <span>
+                        Proyectos<br>
+                        inmobiliarios
+                    </span>
+
+                </div>
+
+
+                <div class="sarams-feature">
+
+                    <span class="material-symbols-outlined">
+                        groups
+                    </span>
+
+                    <span>
+                        Clientes<br>
+                        y ventas
+                    </span>
+
+                </div>
+
+
+                <div class="sarams-feature">
+
+                    <span class="material-symbols-outlined">
+                        monitoring
+                    </span>
+
+                    <span>
+                        Operación<br>
+                        y seguimiento
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Panel sesión cerrada -->
+
+    <section class="sarams-auth">
+
+        <div class="sarams-auth-inner">
+
+            <div class="sarams-mobile-brand">
+                SARAMS
+            </div>
+
+
+            <div class="sarams-success-icon">
+
+                <span class="material-symbols-outlined">
+                    check
+                </span>
+
+            </div>
+
+
+            <h1 class="sarams-auth-title">
+                Sesión finalizada
+            </h1>
+
+
+            <p class="sarams-auth-subtitle">
+                Has cerrado tu sesión correctamente.
+                Puedes volver a iniciar sesión cuando lo necesites.
+            </p>
+
+
+            {% url "admin:index" as login_url %}
+
+            <a
+                href="{{ login_url }}"
+                class="sarams-login-button"
+            >
+
+                <span>
+                    Iniciar sesión nuevamente
+                </span>
+
+                <span class="material-symbols-outlined">
+                    arrow_forward
+                </span>
+
+            </a>
+
+
+            <div class="sarams-security">
+
+                <span class="material-symbols-outlined">
+                    lock
+                </span>
+
+                <span>
+                    Tu sesión se cerró de forma segura
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}
