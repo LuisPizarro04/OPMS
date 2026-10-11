@@ -1,25 +1,24 @@
 # Create your views here.
 import os
-# from unittest.mock import right
-from django.utils import timezone as django_timezone
-from aiohttp import request
-from aiohttp import request
-from django.views.generic import TemplateView
-from django.views import View
-from django.shortcuts import render, get_object_or_404, redirect
+from datetime import datetime
+
 from django.contrib import messages
 from django.contrib.admin.sites import site
-from xhtml2pdf import pisa
-from OPMS import settings
-from gestion_propiedad.models import Propiedade
-from .models import Venta, VentaEtapa, CampoEtapa, ValoresEtapa
-from gestion_contable.models import Pagos, ValorUf
+from django.db.models import Prefetch, Q
+from django.shortcuts import get_object_or_404, HttpResponse, HttpResponseRedirect, redirect
 from django.template.loader import get_template
-from django.shortcuts import render, get_object_or_404, HttpResponse, HttpResponseRedirect, redirect
-from datetime import datetime, timezone
+# from unittest.mock import right
+from django.utils import timezone as django_timezone
+from django.views import View
+from django.views.generic import TemplateView
+from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema_view, extend_schema
+from xhtml2pdf import pisa
+
+from OPMS import settings
+from gestion_contable.models import Pagos, ValorUf
+from gestion_propiedad.models import Condominio
 from .models import (Venta, Etapas, VentaEtapa, CampoEtapa, ValoresEtapa)
 from .serializers import (
     VentaSerializer,
@@ -28,8 +27,7 @@ from .serializers import (
     CampoEtapaSerializer,
     ValoresEtapaSerializer
 )
-from django.db.models import Prefetch, Q
-from gestion_propiedad.models import Propiedade, Condominio
+
 fecha_hoy = datetime.now()
 
 
