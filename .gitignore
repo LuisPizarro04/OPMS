@@ -42,3 +42,6 @@ app/vectorstore/
 
 .DS_Store
 Thumbs.db
+
+*.sqlite3.backup
+*.sqlite3.old
